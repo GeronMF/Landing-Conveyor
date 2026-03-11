@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Save, Eye, Trash2, Plus, GripVertical } from 'lucide-react';
+import { ArrowLeft, Save, Eye, Trash2, Plus, GripVertical, Zap } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { JsonEditor } from '@/components/admin/json-editor';
@@ -144,6 +145,10 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
         ageVerification: landing.ageVerification ?? false,
         howToOrder: landing.howToOrder || null,
         delivery: landing.delivery || null,
+        orderDestination: landing.orderDestination || 'cs_cart',
+        keycrmApiKey: landing.keycrmApiKey || null,
+        keycrmSourceId: landing.keycrmSourceId != null ? Number(landing.keycrmSourceId) : null,
+        keycrmManagerId: landing.keycrmManagerId != null ? Number(landing.keycrmManagerId) : null,
       };
 
       const response = await fetch(`/api/admin/landings/${id}`, {
@@ -238,6 +243,10 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
           <TabsTrigger value="sections">Секції сторінки</TabsTrigger>
           <TabsTrigger value="faq">FAQ</TabsTrigger>
           <TabsTrigger value="company">Інфо компанії / Футер</TabsTrigger>
+          <TabsTrigger value="integrations">
+            <Zap className="w-3.5 h-3.5 mr-1.5" />
+            Інтеграції
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -924,6 +933,101 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+        {/* ===== ІНТЕГРАЦІЇ ===== */}
+        <TabsContent value="integrations">
+          <div className="space-y-6">
+            {/* Канал доставки заявок */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-primary" />
+                  Канал доставки заявок
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <Label className="text-base font-semibold">Куди відправляти заявки?</Label>
+                  <p className="text-sm text-muted-foreground mt-1 mb-3">
+                    Оберіть систему, до якої будуть надходити заявки з цього лендингу.
+                  </p>
+                  <Select
+                    value={landing.orderDestination || 'cs_cart'}
+                    onValueChange={(value) => setLanding({ ...landing, orderDestination: value })}
+                  >
+                    <SelectTrigger className="w-full max-w-sm">
+                      <SelectValue placeholder="Оберіть систему" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cs_cart">CS-Cart</SelectItem>
+                      <SelectItem value="keycrm">KeyCRM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* KeyCRM налаштування */}
+                {(landing.orderDestination === 'keycrm') && (
+                  <div className="space-y-5 border rounded-xl p-5 bg-muted/20">
+                    <p className="text-sm font-semibold text-primary">Налаштування KeyCRM</p>
+
+                    <div>
+                      <Label>API-ключ KeyCRM</Label>
+                      <p className="text-xs text-muted-foreground mb-1.5">
+                        Якщо не заповнено — використовується глобальний ключ з <code className="text-xs bg-muted px-1 rounded">.env</code> (KEYCRM_API_KEY)
+                      </p>
+                      <Input
+                        type="password"
+                        placeholder="Вставте API-ключ KeyCRM..."
+                        value={landing.keycrmApiKey || ''}
+                        onChange={(e) => setLanding({ ...landing, keycrmApiKey: e.target.value || null })}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>ID джерела (source_id)</Label>
+                        <p className="text-xs text-muted-foreground mb-1.5">
+                          Звідки прийшов заказ у KeyCRM. За замовчуванням з <code className="text-xs bg-muted px-1 rounded">KEYCRM_DEFAULT_SOURCE_ID</code>
+                        </p>
+                        <Input
+                          type="number"
+                          placeholder="Наприклад: 5"
+                          value={landing.keycrmSourceId ?? ''}
+                          onChange={(e) => setLanding({
+                            ...landing,
+                            keycrmSourceId: e.target.value ? Number(e.target.value) : null,
+                          })}
+                        />
+                      </div>
+
+                      <div>
+                        <Label>ID менеджера (manager_id)</Label>
+                        <p className="text-xs text-muted-foreground mb-1.5">
+                          Відповідальний менеджер у KeyCRM. За замовчуванням з <code className="text-xs bg-muted px-1 rounded">KEYCRM_DEFAULT_MANAGER_ID</code>
+                        </p>
+                        <Input
+                          type="number"
+                          placeholder="Наприклад: 12"
+                          value={landing.keycrmManagerId ?? ''}
+                          onChange={(e) => setLanding({
+                            ...landing,
+                            keycrmManagerId: e.target.value ? Number(e.target.value) : null,
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* CS-Cart підказка */}
+                {(!landing.orderDestination || landing.orderDestination === 'cs_cart') && (
+                  <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20 px-4 py-3 text-sm text-blue-700 dark:text-blue-400">
+                    Заявки відправляються до <strong>CS-Cart</strong>. ID товару для кожного варіанту задається у вкладці <strong>Варіанти товару</strong> → поле <em>CS-Cart Product ID</em>.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
