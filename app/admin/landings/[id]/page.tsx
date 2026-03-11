@@ -202,7 +202,9 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">{landing.pageTitle || landing.slug}</h1>
+            <h1 className="text-3xl font-bold">
+              {landing.pageTitle || landing.slug}
+            </h1>
             <p className="text-sm text-muted-foreground">/{landing.slug}</p>
           </div>
         </div>
@@ -214,7 +216,10 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
               Preview
             </Link>
           </Button>
-          <Button variant={landing.status === 'published' ? 'secondary' : 'default'} onClick={handlePublish}>
+          <Button
+            variant={landing.status === 'published' ? 'secondary' : 'default'}
+            onClick={handlePublish}
+          >
             {landing.status === 'published' ? 'Unpublish' : 'Publish'}
           </Button>
           <Button onClick={handleSave} disabled={saving}>
