@@ -49,7 +49,7 @@ model Landing {
   links              Json?
 
   // Канал доставки заявок
-  orderDestination OrderDestination @default(cs_cart)
+  orderDestination OrderDestination @default(keycrm)
   keycrmApiKey     String?          @db.Text
   keycrmSourceId   Int?
   keycrmManagerId  Int?

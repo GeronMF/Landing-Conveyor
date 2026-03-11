@@ -92,6 +92,10 @@ export async function POST(
         ageVerification:   original.ageVerification,
         howToOrder:        original.howToOrder ?? undefined,
         delivery:          original.delivery ?? undefined,
+        orderDestination:  original.orderDestination,
+        keycrmApiKey:      original.keycrmApiKey,
+        keycrmSourceId:    original.keycrmSourceId,
+        keycrmManagerId:   original.keycrmManagerId,
       },
     });
 

@@ -145,7 +145,7 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
         ageVerification: landing.ageVerification ?? false,
         howToOrder: landing.howToOrder || null,
         delivery: landing.delivery || null,
-        orderDestination: landing.orderDestination || 'cs_cart',
+        orderDestination: landing.orderDestination || 'keycrm',
         keycrmApiKey: landing.keycrmApiKey || null,
         keycrmSourceId: landing.keycrmSourceId != null ? Number(landing.keycrmSourceId) : null,
         keycrmManagerId: landing.keycrmManagerId != null ? Number(landing.keycrmManagerId) : null,
@@ -1020,7 +1020,7 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
                 )}
 
                 {/* CS-Cart підказка */}
-                {(!landing.orderDestination || landing.orderDestination === 'cs_cart') && (
+                {(landing.orderDestination === 'cs_cart') && (
                   <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20 px-4 py-3 text-sm text-blue-700 dark:text-blue-400">
                     Заявки відправляються до <strong>CS-Cart</strong>. ID товару для кожного варіанту задається у вкладці <strong>Варіанти товару</strong> → поле <em>CS-Cart Product ID</em>.
                   </div>
