@@ -307,7 +307,12 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
                   <Input
                     type="color"
                     value={landing.themePrimaryColor || '#2563eb'}
-                    onChange={(e) => setLanding({ ...landing, themePrimaryColor: e.target.value })}
+                    onChange={(e) =>
+                      setLanding({
+                        ...landing,
+                        themePrimaryColor: e.target.value,
+                      })
+                    }
                     className="h-12"
                   />
                 </div>
@@ -316,99 +321,16 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
                   <Input
                     type="color"
                     value={landing.themeAccentColor || '#10b981'}
-                    onChange={(e) => setLanding({ ...landing, themeAccentColor: e.target.value })}
+                    onChange={(e) =>
+                      setLanding({
+                        ...landing,
+                        themeAccentColor: e.target.value,
+                      })
+                    }
                     className="h-12"
                   />
                 </div>
               </div>
-
-              {/* Налаштування джерела заявок */}
-              <div className="space-y-4 border-t pt-4">
-                <div>
-                  <Label className="font-semibold">Налаштування джерела заявок</Label>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Оберіть, куди надсилати нові заявки: у KeyCRM або в CS-Cart.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Джерело заявок</Label>
-                    <select
-                      className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-background"
-                      value={landing.orderDestination || 'cs_cart'}
-                      onChange={(e) =>
-                        setLanding({
-                          ...landing,
-                          orderDestination: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="keycrm">KeyCRM</option>
-                      <option value="cs_cart">CS-Cart</option>
-                    </select>
-                  </div>
-                </div>
-
-                {landing.orderDestination === 'keycrm' && (
-                  <div className="space-y-4 rounded-xl border bg-muted/40 p-4">
-                    <div>
-                      <Label>KeyCRM API ключ</Label>
-                      <Textarea
-                        className="mt-1"
-                        rows={3}
-                        placeholder="sk_live_..."
-                        value={landing.keycrmApiKey || ''}
-                        onChange={(e) =>
-                          setLanding({
-                            ...landing,
-                            keycrmApiKey: e.target.value,
-                          })
-                        }
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Ключ доступу до KeyCRM. Зберігається в зашифрованому вигляді в базі даних.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label>ID джерела (source_id)</Label>
-                        <Input
-                          type="number"
-                          value={landing.keycrmSourceId ?? ''}
-                          onChange={(e) =>
-                            setLanding({
-                              ...landing,
-                              keycrmSourceId:
-                                e.target.value === '' ? null : Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label>ID менеджера (manager_id)</Label>
-                        <Input
-                          type="number"
-                          value={landing.keycrmManagerId ?? ''}
-                          onChange={(e) =>
-                            setLanding({
-                              ...landing,
-                              keycrmManagerId:
-                                e.target.value === '' ? null : Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {landing.orderDestination !== 'keycrm' && (
-                  <p className="text-xs text-muted-foreground">
-                    Для CS-Cart використовується поточна інтеграція через REST API або Webhook.
-                  </p>
-                )}
 
               {/* 18+ Попап підтвердження */}
               <div className="flex items-center justify-between rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-950/20 px-4 py-3">
