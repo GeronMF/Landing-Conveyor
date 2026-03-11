@@ -1,0 +1,42 @@
+# /etc/systemd/system/landing-conveyor.service
+# Systemd service file for Landing Conveyor (alternative to PM2)
+
+[Unit]
+Description=Landing Conveyor Next.js Application
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/landing-conveyor
+Environment="NODE_ENV=production"
+Environment="PORT=3000"
+EnvironmentFile=/var/www/landing-conveyor/.env
+ExecStart=/usr/bin/node /var/www/landing-conveyor/node_modules/next/dist/bin/next start
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=landing-conveyor
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/landing-conveyor/public/uploads
+
+[Install]
+WantedBy=multi-user.target
+
+# Installation:
+# 1. Copy this file to /etc/systemd/system/landing-conveyor.service
+# 2. sudo systemctl daemon-reload
+# 3. sudo systemctl enable landing-conveyor
+# 4. sudo systemctl start landing-conveyor
+# 5. sudo systemctl status landing-conveyor
+
+# Logs:
+# sudo journalctl -u landing-conveyor -f

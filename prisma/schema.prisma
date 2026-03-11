@@ -1,0 +1,329 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Landing {
+  id                 String           @id @default(uuid())
+  slug               String           @unique
+  status             LandingStatus    @default(draft)
+  pageTitle          String?
+  pageTitleRu        String?
+  introText          String?          @db.Text
+  introTextRu        String?          @db.Text
+  globalFAQTitle     String           @default("FAQ")
+  globalFAQTitleRu   String?
+  seoTitle           String?
+  seoTitleRu         String?
+  seoDescription     String?          @db.Text
+  seoDescriptionRu   String?          @db.Text
+  ogImage            String?
+  logoUrl            String?
+  themeId            String?
+  themePrimaryColor  String?
+  themeAccentColor   String?
+  companyName        String?
+  companyNameRu      String?
+  legalText          String?          @db.Text
+  legalTextRu        String?          @db.Text
+  privacyPolicyText  String?          @db.LongText
+  privacyPolicyTextRu String?         @db.LongText
+  termsText          String?          @db.LongText
+  termsTextRu        String?          @db.LongText
+  copyrightText      String?
+  copyrightTextRu    String?
+  phone              String?
+  email              String?
+  socials            Json?
+  links              Json?
+
+  // Канал доставки заявок
+  orderDestination OrderDestination @default(cs_cart)
+  keycrmApiKey     String?          @db.Text
+  keycrmSourceId   Int?
+  keycrmManagerId  Int?
+
+  // JSON поля по ТЗ
+  heroImages   Json? // [{url, alt}]
+  variantsJson Json? // [{id, name, slug, color, images}]
+  faqsJson     Json? // [{id, question, answer}]
+  companyInfo  Json? // {companyName, edrpou, legalAddress, email, workingHours, phone, links}
+  formConfig   Json? // {title, titleRu, subtitle, subtitleRu, buttonText, buttonTextRu, successTitle, successTitleRu, successText, successTextRu, fields: [{name, label, labelRu, placeholder, placeholderRu, required, visible}]}
+  ageVerification Boolean @default(false) // Показывать попап подтверждения 18+
+
+  // Секція "Як замовити"
+  howToOrder   Json? // {title, titleRu, productName, productNameRu, steps: [{icon, label, labelRu, text, textRu}]}
+  // Секція "Доставка та оплата"
+  delivery     Json? // {title, titleRu, shippingText, shippingTextRu, carriers: [{name, logoUrl}], promoText, promoTextRu, paymentNote, paymentNoteRu}
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Старые связи для обратной совместимости (можно удалить после миграции)
+  oldVariants Variant[] @relation("oldVariants")
+  oldFaqs     FAQ[]     @relation("oldFaqs")
+  leads       Lead[]
+  theme       Theme?    @relation(fields: [themeId], references: [id], onDelete: SetNull)
+
+  @@index([slug])
+  @@index([status])
+  @@index([themeId])
+}
+
+model Variant {
+  id                    String   @id @default(uuid())
+  landingId             String
+  order                 Int      @default(0)
+  title                 String
+  titleRu               String?
+  subtitle              String?  @db.Text
+  subtitleRu            String?  @db.Text
+  offerText             String?  @db.Text
+  offerTextRu           String?  @db.Text
+  badgeText             String?
+  badgeTextRu           String?
+  price                 Decimal  @db.Decimal(10, 2)
+  oldPrice              Decimal? @db.Decimal(10, 2)
+  currency              String   @default("UAH")
+  ctaPrimaryText        String   @default("Замовити зараз")
+  ctaPrimaryTextRu      String?
+  ctaSecondaryPhoneText String?
+  ctaSecondaryPhoneTextRu String?
+  primaryPhone          String?
+  economyText           String?
+  economyTextRu         String?
+  faqLinkText           String?
+  faqLinkTextRu         String?
+  heroImageUrl          String?
+  videoUrl              String?
+  videoUrlDesktop       String?
+  videoHtmlDesktop      String?  @db.Text
+  videoUrlMobile        String?
+  videoHtmlMobile       String?  @db.Text
+  videoTitle            String?
+  videoTitleRu          String?
+  videoText             String?  @db.Text
+  videoTextRu            String?  @db.Text
+  sizeTableHtml         String?  @db.LongText
+  sizeTableHtmlRu       String?  @db.LongText
+  specificationsBackgroundImage String?
+  specificationsFixedBackground Boolean @default(false)
+  repeatOfferBlocks     Int      @default(2)
+  cscartProductId       String?  // ID товара в CS-Cart для создания заказа
+  keycrmOfferSku        String?  // SKU товару в KeyCRM
+
+  // JSON поля по ТЗ
+  heroImages     Json? // [{url, alt}] - галерея в hero
+  advantages     Json? // [{id, title, text, image}]
+  specifications Json? // [{name, value}]
+  sizeTable      Json? // [{name, columns: [], rows: []}]
+  gallery        Json? // [{url, alt, order}]
+  reviews        Json? // [{id, name, city, photo, text, rating}]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  landing           Landing         @relation("oldVariants", fields: [landingId], references: [id], onDelete: Cascade)
+  // Старые связи для обратной совместимости
+  oldImages         VariantImage[]  @relation("oldImages")
+  oldBenefits       Benefit[]       @relation("oldBenefits")
+  oldSpecifications Specification[] @relation("oldSpecifications")
+  oldSizeTables     SizeTable[]     @relation("oldSizeTables")
+  oldReviews        Review[]        @relation("oldReviews")
+  leads             Lead[]
+
+  @@index([landingId])
+  @@index([order])
+}
+
+model VariantImage {
+  id        String  @id @default(uuid())
+  variantId String
+  url       String
+  alt       String?
+  altRu     String?
+  order     Int     @default(0)
+
+  variant Variant @relation("oldImages", fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([variantId])
+  @@index([order])
+}
+
+model Benefit {
+  id        String  @id @default(uuid())
+  variantId String
+  title     String
+  titleRu   String?
+  text      String  @db.Text
+  textRu    String? @db.Text
+  imageUrl  String?
+  order     Int     @default(0)
+
+  variant Variant @relation("oldBenefits", fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([variantId])
+  @@index([order])
+}
+
+model Specification {
+  id        String @id @default(uuid())
+  variantId String
+  key       String
+  keyRu     String?
+  value     String @db.Text
+  valueRu   String? @db.Text
+  order     Int    @default(0)
+
+  variant Variant @relation("oldSpecifications", fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([variantId])
+  @@index([order])
+}
+
+model SizeTable {
+  id        String @id @default(uuid())
+  variantId String
+  title     String
+  titleRu   String?
+  columns   Json?  // {header1: {uk: "...", ru: "..."}, header2: {...}}
+  order     Int    @default(0)
+
+  variant Variant        @relation("oldSizeTables", fields: [variantId], references: [id], onDelete: Cascade)
+  rows    SizeTableRow[]
+
+  @@index([variantId])
+  @@index([order])
+}
+
+model SizeTableRow {
+  id          String @id @default(uuid())
+  sizeTableId String
+  sizeLabel   String
+  columns     Json
+  order       Int    @default(0)
+
+  sizeTable SizeTable @relation(fields: [sizeTableId], references: [id], onDelete: Cascade)
+
+  @@index([sizeTableId])
+  @@index([order])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  variantId  String
+  authorName String
+  authorNameRu String?
+  rating     Int
+  text       String   @db.Text
+  textRu     String?  @db.Text
+  photoUrl   String?
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  variant Variant @relation("oldReviews", fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([variantId])
+  @@index([order])
+}
+
+model FAQ {
+  id        String @id @default(uuid())
+  landingId String
+  question  String @db.Text
+  questionRu String? @db.Text
+  answer    String @db.Text
+  answerRu  String? @db.Text
+  order     Int    @default(0)
+  isOpen    Boolean @default(false)
+
+  landing Landing @relation("oldFaqs", fields: [landingId], references: [id], onDelete: Cascade)
+
+  @@index([landingId])
+  @@index([order])
+}
+
+model Theme {
+  id            String   @id @default(uuid())
+  name          String
+  // Основные цвета
+  primaryColor  String
+  accentColor   String
+  // Фон секций (hero background orbs)
+  gradientFrom  String
+  gradientVia   String
+  gradientTo    String
+  // Кнопки CTA
+  buttonFrom    String?
+  buttonVia     String?
+  buttonTo      String?
+  // Градиенты заголовков
+  titleFrom     String?
+  titleVia      String?
+  titleTo       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  landings Landing[]
+
+  @@index([name])
+}
+
+model Lead {
+  id             String     @id @default(uuid())
+  landingId      String
+  variantId      String?
+  name           String
+  phone          String
+  city           String?
+  comment        String?    @db.Text
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  utmContent     String?
+  utmTerm        String?
+  gclid          String?
+  fbclid         String?
+  pageUrl        String?
+  referer        String?
+  userAgent      String?    @db.Text
+  ip             String?
+  status         LeadStatus @default(new)
+  csCartResponse Json?
+  createdAt      DateTime   @default(now())
+
+  landing Landing  @relation(fields: [landingId], references: [id], onDelete: Cascade)
+  variant Variant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([landingId])
+  @@index([variantId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum LandingStatus {
+  draft
+  published
+}
+
+enum OrderDestination {
+  cs_cart
+  keycrm
+}
+
+enum LeadStatus {
+  new
+  sent
+  failed
+}

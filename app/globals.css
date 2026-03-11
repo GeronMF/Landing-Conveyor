@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+
+  /* ── Стандартная тема (синяя / cyan / teal) ─────────────────── */
+  --th-btn-from:   #1e3a8a;   /* синяя кнопка: от */
+  --th-btn-via:    #0891b2;   /* синяя кнопка: через */
+  --th-btn-to:     #0d9488;   /* синяя кнопка: до */
+  --th-hero-from:  #dbeafe;   /* фон секции: от */
+  --th-hero-via:   #cffafe;   /* фон секции: через */
+  --th-hero-to:    #ccfbf1;   /* фон секции: до */
+  --th-title-from: #2563eb;   /* заголовки: от */
+  --th-title-via:  #0891b2;   /* заголовки: через */
+  --th-title-to:   #0d9488;   /* заголовки: до */
+  --th-orb-1:      rgba(96, 165, 250, 0.50);   /* декоративный шар 1 */
+  --th-orb-2:      rgba(34, 211, 238, 0.45);   /* декоративный шар 2 */
+  --th-orb-3:      rgba(45, 212, 191, 0.40);   /* декоративный шар 3 */
+  --th-badge-from: #2563eb;   /* бейдж от */
+  --th-badge-to:   #0891b2;   /* бейдж до */
+  /* адаптивные переменные текста/карточек */
+  --th-text-primary: #1e293b;
+  --th-text-muted:   #64748b;
+  --th-card-bg:      rgba(255,255,255,0.85);
+  --th-card-border:  rgba(148,163,184,0.30);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+    body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+}
+
+/* Таблица размеров — HTML-рендер */
+.size-table-html {
+  overflow-x: auto;
+}
+.size-table-html p {
+  margin: 0 0 0.75em;
+  line-height: 1.6;
+}
+.size-table-html table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 700px;
+  margin: 16px auto;
+  font-size: 0.9rem;
+}
+.size-table-html th,
+.size-table-html td {
+  border: 1px solid hsl(var(--border));
+  padding: 10px 12px;
+  text-align: center;
+  vertical-align: middle;
+}
+.size-table-html thead th {
+  background: linear-gradient(to right, var(--th-btn-from), var(--th-btn-via), var(--th-btn-to));
+  font-weight: 700;
+  color: white;
+}
+.size-table-html tbody tr:nth-child(even) {
+  background-color: hsl(var(--muted) / 0.3);
+}
+.size-table-html tbody tr:hover {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+/* Tiptap Rich Text Editor */
+.tiptap-editor {
+  outline: none;
+  min-height: 80px;
+}
+
+.tiptap-editor p {
+  margin: 0 0 0.4em;
+}
+
+.tiptap-editor p:last-child {
+  margin-bottom: 0;
+}
+
+.tiptap-editor ul,
+.tiptap-editor ol {
+  padding-left: 1.25em;
+  margin: 0.25em 0;
+}
+
+.tiptap-editor li {
+  margin: 0.15em 0;
+}
+
+.tiptap-editor strong {
+  font-weight: 700;
+}
+
+.tiptap-editor em {
+  font-style: italic;
+}
+
+.tiptap-editor u {
+  text-decoration: underline;
+}
+
+/* Выравнивание текста */
+.tiptap-editor [style*="text-align: center"],
+.tiptap-editor .text-center { text-align: center; }
+.tiptap-editor [style*="text-align: right"],
+.tiptap-editor .text-right  { text-align: right; }
+.tiptap-editor [style*="text-align: justify"],
+.tiptap-editor .text-justify { text-align: justify; }
+.tiptap-editor [style*="text-align: left"],
+.tiptap-editor .text-left   { text-align: left; }
+
+/* ── Тема: утилитарные классы ────────────────────────────────── */
+.th-title-gradient {
+  background-image: linear-gradient(to right, var(--th-title-from), var(--th-title-via), var(--th-title-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.th-btn-gradient {
+  background: linear-gradient(to right, var(--th-btn-from), var(--th-btn-via), var(--th-btn-to)) !important;
+}
+
+.th-btn-gradient:hover {
+  filter: brightness(0.9);
+}

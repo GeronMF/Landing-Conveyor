@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: landing_conveyor_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: landing_conveyor
+      MYSQL_USER: landing_user
+      MYSQL_PASSWORD: landing_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - landing_network
+    command: --default-authentication-plugin=mysql_native_password
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: landing_conveyor_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: password
+      UPLOAD_LIMIT: 50M
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - landing_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: landing_conveyor_app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "mysql://root:password@mysql:3306/landing_conveyor"
+      NEXTAUTH_SECRET: "development-secret-change-in-production"
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    networks:
+      - landing_network
+    volumes:
+      - ./public/uploads:/app/public/uploads
+      - ./.env:/app/.env
+
+volumes:
+  mysql_data:
+
+networks:
+  landing_network:
+    driver: bridge

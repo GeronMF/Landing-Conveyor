@@ -1,0 +1,36 @@
+{
+  "common": {
+    "orderNow": "Замовити зараз",
+    "orCall": "Або зателефонуйте",
+    "frequentlyAskedQuestions": "Часті питання",
+    "advantages": "Переваги",
+    "specifications": "Характеристики",
+    "sizeTables": "Таблиці розмірів",
+    "reviews": "Відгуки",
+    "economy": "Економія",
+    "name": "Ім'я",
+    "phone": "Телефон",
+    "city": "Місто",
+    "comment": "Коментар",
+    "sendRequest": "Відправити заявку",
+    "sending": "Відправка...",
+    "requestSent": "Заявка успішно відправлена!",
+    "requestSentDesc": "Ми зв'яжемось з вами найближчим часом.",
+    "error": "Помилка",
+    "errorSending": "Не вдалося відправити заявку.",
+    "noImage": "Немає зображення",
+    "additionalInfo": "Додаткова інформація",
+    "clickToView": "Натисніть для перегляду",
+    "hours": "години",
+    "minutes": "хвилини",
+    "seconds": "секунди",
+    "size": "Розмір"
+  },
+  "form": {
+    "title": "Оформити замовлення",
+    "namePlaceholder": "Введіть ваше ім'я",
+    "phonePlaceholder": "+380 (67) 123-45-67",
+    "cityPlaceholder": "Київ",
+    "commentPlaceholder": "Додаткова інформація"
+  }
+}

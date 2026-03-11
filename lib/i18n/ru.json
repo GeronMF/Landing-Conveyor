@@ -1,0 +1,36 @@
+{
+  "common": {
+    "orderNow": "Заказать сейчас",
+    "orCall": "Или позвоните",
+    "frequentlyAskedQuestions": "Часто задаваемые вопросы",
+    "advantages": "Преимущества",
+    "specifications": "Характеристики",
+    "sizeTables": "Таблицы размеров",
+    "reviews": "Отзывы",
+    "economy": "Экономия",
+    "name": "Имя",
+    "phone": "Телефон",
+    "city": "Город",
+    "comment": "Комментарий",
+    "sendRequest": "Отправить заявку",
+    "sending": "Отправка...",
+    "requestSent": "Заявка успешно отправлена!",
+    "requestSentDesc": "Мы свяжемся с вами в ближайшее время.",
+    "error": "Ошибка",
+    "errorSending": "Не удалось отправить заявку.",
+    "noImage": "Нет изображения",
+    "additionalInfo": "Дополнительная информация",
+    "clickToView": "Нажмите для просмотра",
+    "hours": "часы",
+    "minutes": "минуты",
+    "seconds": "секунды",
+    "size": "Размер"
+  },
+  "form": {
+    "title": "Оформить заказ",
+    "namePlaceholder": "Введите ваше имя",
+    "phonePlaceholder": "+7 (999) 123-45-67",
+    "cityPlaceholder": "Москва",
+    "commentPlaceholder": "Дополнительная информация"
+  }
+}
