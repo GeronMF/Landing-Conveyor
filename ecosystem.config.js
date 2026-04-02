@@ -1,19 +1,22 @@
+/**
+ * PM2 для topcina.store (пользователь topcinastore на сервере).
+ * Next.js output: standalone → запуск server.js из каталога standalone (иначе /_next/static даёт 404).
+ */
 module.exports = {
   apps: [{
     name: 'landing-conveyor',
-    script: 'node_modules/next/dist/bin/next',
-    args: 'start',
-    cwd: '/home/cinopadstore/app/project',
+    script: 'server.js',
+    cwd: '/home/topcinastore/app/.next/standalone',
     instances: 1,
     autorestart: true,
     watch: false,
     max_memory_restart: '1G',
     env: {
       NODE_ENV: 'production',
-      PORT: 9009
+      PORT: 3100,
     },
-    error_file: './logs/err.log',
-    out_file: './logs/out.log',
-    log_date_format: 'YYYY-MM-DD HH:mm:ss Z'
-  }]
+    error_file: '/home/topcinastore/app/logs/err.log',
+    out_file: '/home/topcinastore/app/logs/out.log',
+    log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+  }],
 };

@@ -1,4 +1,7 @@
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
+import { existsSync } from 'fs';
+import { join } from 'path';
 import { db } from '@/lib/db';
 import { VariantSection } from '@/components/landing/variant-section';
 import { FAQSection } from '@/components/landing/faq-section';
@@ -16,6 +19,10 @@ interface PageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ preview?: string }>;
 }
+
+// Нужно чтобы `generateMetadata` пересчитывался на запросе (для корректного `og:image` в Telegram/Viber).
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function LandingPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
@@ -112,7 +119,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
         fallbackAccent={landing.themeAccentColor}
       />
       {landing.ageVerification && <AgeVerificationPopup slug={slug} />}
-      {process.env.NEXT_PUBLIC_GTM_ID && (
+      {process.env.NEXT_PUBLIC_GTM_ID && !process.env.NEXT_PUBLIC_GTM_ID_TOPCINA && (
         <>
           <Script
             id="gtm-script"
@@ -366,28 +373,85 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   // Определяем OG-картинку: сначала явный ogImage, потом первая картинка из контента
-  const ogImageUrl = (() => {
-    if (landing.ogImage) return landing.ogImage;
+  // Важно для Telegram/Viber: в `og:image` нужна абсолютная ссылка с публичным доменом.
+  // Для надежности origin берём из заголовков запроса, а не только из NEXT_PUBLIC_APP_URL.
+  const hdrs = headers();
+  const forwardedProto = hdrs.get('x-forwarded-proto')?.split(',')?.[0]?.trim();
+  const host = hdrs.get('x-forwarded-host') || hdrs.get('host') || '';
+  const cleanHost = host.replace(/:\d+$/, '');
+  const originFromHeaders = cleanHost
+    ? `${forwardedProto || 'https'}://${cleanHost}`
+    : (process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || '');
 
-    // Пробуем heroImages
-    if (Array.isArray(landing.heroImages) && landing.heroImages.length > 0) {
-      const first = (landing.heroImages as any[])[0];
-      if (first?.url) return first.url;
+  const toAbsoluteUrl = (url: string | null | undefined) => {
+    if (!url) return null;
+
+    const appOrigin = originFromHeaders;
+
+    if (url.startsWith('//')) return appOrigin ? `https:${url}` : `https:${url}`;
+
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      // Если по какой-то причине в БД лежит localhost/127.0.0.1 — заменяем на публичный origin.
+      if (appOrigin) {
+        const normalized = url.replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i, '');
+        if (normalized !== url) return `${appOrigin}${normalized.startsWith('/') ? '' : '/'}${normalized}`;
+      }
+      return url;
     }
 
-    // Пробуем первое изображение из JSON-вариантов
+    if (!appOrigin) return url;
+    if (url.startsWith('/')) return `${appOrigin}${url}`;
+    return `${appOrigin}/${url}`;
+  };
+
+  const getOgCandidates = () => {
+    const candidates: Array<string | null | undefined> = [];
+    candidates.push(landing.ogImage ?? null);
+
+    // Первое изображение из JSON-вариантов
     if (Array.isArray(landing.variantsJson) && landing.variantsJson.length > 0) {
       const v = (landing.variantsJson as any[])[0];
       const imgs = v?.images || v?.gallery;
-      if (Array.isArray(imgs) && imgs.length > 0 && imgs[0]?.url) return imgs[0].url;
+      if (Array.isArray(imgs) && imgs.length > 0 && imgs[0]?.url) {
+        candidates.push(imgs[0].url);
+      }
     }
 
-    // Пробуем первое изображение из старых вариантов
+    // Первое изображение из старых вариантов
     const firstOldImage = landing.oldVariants?.[0]?.oldImages?.[0]?.url;
-    if (firstOldImage) return firstOldImage;
+    if (firstOldImage) candidates.push(firstOldImage);
 
-    return null;
-  })();
+    // Первое изображение из heroImages (fallback)
+    if (Array.isArray(landing.heroImages) && landing.heroImages.length > 0) {
+      const first = (landing.heroImages as any[])[0];
+      if (first?.url) candidates.push(first.url);
+    }
+
+    return candidates.filter(Boolean) as string[];
+  };
+
+  // Проверяем, что если URL ведет на наш /api/uploads, то соответствующий файл реально существует.
+  const isCandidateAvailable = (candidateUrl: string) => {
+    try {
+      const pathname = candidateUrl.startsWith('http')
+        ? new URL(candidateUrl).pathname
+        : candidateUrl;
+      const match = pathname.match(/^\/api\/uploads\/([^\/]+)\/(.+)$/);
+      if (!match) return true; // внешние/другие URL считаем валидными
+
+      const folder = match[1];
+      const fileName = match[2];
+      const filePath = join(process.cwd(), 'public', 'uploads', folder, fileName);
+      return existsSync(filePath);
+    } catch {
+      // Если не смогли распарсить — не ломаем генерацию, просто оставляем доступность как "валидную"
+      return true;
+    }
+  };
+
+  const ogCandidates = getOgCandidates();
+  const selectedOgImageUrl = ogCandidates.find((u) => isCandidateAvailable(u)) ?? null;
+  const ogImageAbsoluteUrl = toAbsoluteUrl(selectedOgImageUrl);
 
   const title = landing.seoTitle || landing.pageTitle || 'Landing';
   const description = landing.seoDescription || landing.introText || '';
@@ -398,13 +462,15 @@ export async function generateMetadata({ params }: PageProps) {
     openGraph: {
       title,
       description,
-      ...(ogImageUrl ? { images: [{ url: ogImageUrl }] } : {}),
+      ...(ogImageAbsoluteUrl
+        ? { images: [{ url: ogImageAbsoluteUrl, secureUrl: ogImageAbsoluteUrl }] }
+        : {}),
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      ...(ogImageUrl ? { images: [ogImageUrl] } : {}),
+      ...(ogImageAbsoluteUrl ? { images: [ogImageAbsoluteUrl] } : {}),
     },
   };
 }
