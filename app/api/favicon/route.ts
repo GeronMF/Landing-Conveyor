@@ -6,8 +6,12 @@ import { join } from 'path';
 // Универсальная выдача favicon, чтобы и в standalone, и при проксировании всегда отдавалось корректно.
 export async function GET() {
   try {
-    const filePath = join(process.cwd(), 'public', 'favicon.png');
-    if (!existsSync(filePath)) {
+    const candidates = [
+      join(process.cwd(), 'public', 'favicon.png'),
+      '/home/topcinastore/app/public/favicon.png',
+    ];
+    const filePath = candidates.find((p) => existsSync(p));
+    if (!filePath) {
       return NextResponse.json({ error: 'favicon.png not found' }, { status: 404 });
     }
 
