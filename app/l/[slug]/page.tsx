@@ -373,35 +373,35 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   // Определяем OG-картинку: сначала явный ogImage, потом первая картинка из контента
-  // Важно для Telegram/Viber: в `og:image` нужна абсолютная ссылка с публичным доменом.
-  // Для надежности origin берём из заголовков запроса, а не только из NEXT_PUBLIC_APP_URL.
+  // Telegram/Viber: в og:image нужна абсолютная https-ссылка на публичный домен.
+  // Сначала NEXT_PUBLIC_APP_URL — краулеры часто приходят с "внутренним" Host за nginx, заголовки не надёжны.
   const hdrs = headers();
   const forwardedProto = hdrs.get('x-forwarded-proto')?.split(',')?.[0]?.trim();
   const host = hdrs.get('x-forwarded-host') || hdrs.get('host') || '';
   const cleanHost = host.replace(/:\d+$/, '');
   const originFromHeaders = cleanHost
     ? `${forwardedProto || 'https'}://${cleanHost}`
-    : (process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || '');
+    : '';
+  const envOrigin = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || '';
+  const publicOrigin = envOrigin || originFromHeaders;
 
   const toAbsoluteUrl = (url: string | null | undefined) => {
     if (!url) return null;
 
-    const appOrigin = originFromHeaders;
-
-    if (url.startsWith('//')) return appOrigin ? `https:${url}` : `https:${url}`;
+    if (url.startsWith('//')) return `https:${url}`;
 
     if (url.startsWith('http://') || url.startsWith('https://')) {
-      // Если по какой-то причине в БД лежит localhost/127.0.0.1 — заменяем на публичный origin.
-      if (appOrigin) {
+      if (publicOrigin) {
         const normalized = url.replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i, '');
-        if (normalized !== url) return `${appOrigin}${normalized.startsWith('/') ? '' : '/'}${normalized}`;
+        if (normalized !== url) return `${publicOrigin}${normalized.startsWith('/') ? '' : '/'}${normalized}`;
       }
       return url;
     }
 
-    if (!appOrigin) return url;
-    if (url.startsWith('/')) return `${appOrigin}${url}`;
-    return `${appOrigin}/${url}`;
+    // Относительный путь — только с известным публичным origin (иначе Telegram не отрисует превью)
+    if (!publicOrigin) return null;
+    if (url.startsWith('/')) return `${publicOrigin}${url}`;
+    return `${publicOrigin}/${url}`;
   };
 
   const getOgCandidates = () => {
@@ -449,18 +449,23 @@ export async function generateMetadata({ params }: PageProps) {
   };
 
   const ogCandidates = getOgCandidates();
-  const selectedOgImageUrl = ogCandidates.find((u) => isCandidateAvailable(u)) ?? null;
+  const selectedOgImageUrl =
+    ogCandidates.find((u) => isCandidateAvailable(u)) ?? ogCandidates[0] ?? null;
   const ogImageAbsoluteUrl = toAbsoluteUrl(selectedOgImageUrl);
+  const canonicalPageUrl = publicOrigin ? `${publicOrigin}/l/${slug}` : undefined;
 
   const title = landing.seoTitle || landing.pageTitle || 'Landing';
   const description = landing.seoDescription || landing.introText || '';
 
   return {
+    ...(publicOrigin ? { metadataBase: new URL(`${publicOrigin}/`) } : {}),
     title,
     description,
     openGraph: {
+      type: 'website',
       title,
       description,
+      ...(canonicalPageUrl ? { url: canonicalPageUrl } : {}),
       ...(ogImageAbsoluteUrl
         ? { images: [{ url: ogImageAbsoluteUrl, secureUrl: ogImageAbsoluteUrl }] }
         : {}),
