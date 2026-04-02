@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFile, stat } from 'fs/promises';
-import { join } from 'path';
 import { existsSync } from 'fs';
+import { VIDEO_ROOT, resolveSafePath } from '@/lib/media-storage';
 
 export async function GET(
   request: NextRequest,
@@ -9,12 +9,9 @@ export async function GET(
 ) {
   try {
     const { path } = await params;
-    const filePath = join(process.cwd(), 'public', 'video', ...path);
+    const filePath = resolveSafePath(VIDEO_ROOT, path);
 
-    // Проверяем, что путь не выходит за пределы public/video
-    const resolvedPath = filePath.replace(/\\/g, '/');
-    const publicPath = join(process.cwd(), 'public', 'video').replace(/\\/g, '/');
-    if (!resolvedPath.startsWith(publicPath)) {
+    if (!filePath) {
       return NextResponse.json({ error: 'Invalid path' }, { status: 403 });
     }
 

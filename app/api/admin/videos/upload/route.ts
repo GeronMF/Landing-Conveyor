@@ -3,6 +3,7 @@ import { writeFile, mkdir, access } from 'fs/promises';
 import { join } from 'path';
 import { constants } from 'fs';
 import { verifyAuth } from '@/lib/auth';
+import { VIDEO_ROOT } from '@/lib/media-storage';
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB для видео
 const ALLOWED_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
@@ -35,8 +36,8 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Создаем путь: public/video/{filename}
-    const videoDir = join(process.cwd(), 'public', 'video');
+    // Создаем путь: {MEDIA_STORAGE_ROOT}/video/{filename}
+    const videoDir = VIDEO_ROOT;
     await mkdir(videoDir, { recursive: true });
 
     // Сохраняем с оригинальным именем (или с timestamp если конфликт)

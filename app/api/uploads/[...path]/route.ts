@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
-import { join } from 'path';
 import { existsSync } from 'fs';
+import { UPLOADS_ROOT, resolveSafePath } from '@/lib/media-storage';
 
 export async function GET(
   request: NextRequest,
@@ -9,18 +9,11 @@ export async function GET(
 ) {
   try {
     const { path } = await params;
-    const filePath = join(process.cwd(), 'public', 'uploads', ...path);
+    const filePath = resolveSafePath(UPLOADS_ROOT, path);
 
-    // Проверяем, что файл существует и находится в public/uploads
-    if (!existsSync(filePath)) {
+    // Проверяем, что путь валиден и файл существует
+    if (!filePath || !existsSync(filePath)) {
       return NextResponse.json({ error: 'File not found' }, { status: 404 });
-    }
-
-    // Проверяем, что путь не выходит за пределы public/uploads
-    const resolvedPath = filePath.replace(/\\/g, '/');
-    const publicPath = join(process.cwd(), 'public', 'uploads').replace(/\\/g, '/');
-    if (!resolvedPath.startsWith(publicPath)) {
-      return NextResponse.json({ error: 'Invalid path' }, { status: 403 });
     }
 
     const file = await readFile(filePath);

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { verifyAuth } from '@/lib/auth';
+import { UPLOADS_ROOT } from '@/lib/media-storage';
 
 const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE_MB || '10') * 1024 * 1024;
 const ALLOWED_TYPES = (process.env.ALLOWED_FILE_TYPES || 'image/jpeg,image/png,image/webp,image/gif').split(',');
@@ -35,10 +36,10 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Создаем путь: public/uploads/{landingId}/{filename}
+    // Создаем путь: {MEDIA_STORAGE_ROOT}/uploads/{landingId}/{filename}
     const baseDir = landingId 
-      ? join(process.cwd(), 'public', 'uploads', landingId)
-      : join(process.cwd(), 'public', 'uploads');
+      ? join(UPLOADS_ROOT, landingId)
+      : UPLOADS_ROOT;
     
     await mkdir(baseDir, { recursive: true });
 

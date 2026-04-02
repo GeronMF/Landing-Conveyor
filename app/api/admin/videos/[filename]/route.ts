@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
 import { verifyAuth } from '@/lib/auth';
+import { VIDEO_ROOT } from '@/lib/media-storage';
 
 export async function DELETE(
   request: NextRequest,
@@ -16,8 +17,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Invalid filename' }, { status: 400 });
     }
 
-    const videoDir = join(process.cwd(), 'public', 'video');
-    const filepath = join(videoDir, filename);
+    const filepath = join(VIDEO_ROOT, filename);
 
     try {
       await unlink(filepath);

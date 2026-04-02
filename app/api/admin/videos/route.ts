@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readdir, stat } from 'fs/promises';
-import { join } from 'path';
 import { verifyAuth } from '@/lib/auth';
+import { join } from 'path';
+import { VIDEO_ROOT } from '@/lib/media-storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     await verifyAuth();
 
-    const videoDir = join(process.cwd(), 'public', 'video');
+    const videoDir = VIDEO_ROOT;
 
     try {
       const files = await readdir(videoDir);
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
             const stats = await stat(filepath);
             return {
               filename,
-              url: `/video/${filename}`,
+              url: `/api/video/${filename}`,
               size: stats.size,
               sizeMB: (stats.size / (1024 * 1024)).toFixed(2),
               modified: stats.mtime,
