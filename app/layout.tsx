@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   title: 'Офіційна сторінка оформлення замовлень',
   description: 'Офіційна сторінка підтримки та оформлення замовлень',
   icons: {
-    icon: '/api/favicon?v=2',
-    shortcut: '/api/favicon?v=2',
-    apple: '/api/favicon?v=2',
+    icon: '/favicon.png?v=2',
+    shortcut: '/favicon.png?v=2',
+    apple: '/favicon.png?v=2',
   },
 };
 
