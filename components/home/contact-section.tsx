@@ -40,14 +40,14 @@ export function ContactSection() {
         className="mx-auto max-w-lg"
       >
         <h2 className="text-center text-xl font-semibold text-slate-900 md:text-2xl">
-          Нужна помощь с оформлением?
+          Потрібна допомога з оформленням?
         </h2>
         <p className="mt-2 text-center text-sm text-slate-600">
-          Оставьте заявку — менеджер свяжется с вами.
+          Залиште заявку — менеджер зв'яжеться з вами.
         </p>
         {done ? (
           <p className="mt-8 rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-6 text-center text-sm text-emerald-900">
-            Спасибо! Заявка отправлена. Мы свяжемся с вами в ближайшее время.
+            Дякуємо! Заявку відправлено. Ми зв'яжемося з вами найближчим часом.
           </p>
         ) : (
           <form
@@ -55,14 +55,14 @@ export function ContactSection() {
             className="mt-10 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/5 md:p-8"
           >
             <div className="space-y-2">
-              <Label htmlFor="contact-name">Имя</Label>
+              <Label htmlFor="contact-name">Ім'я</Label>
               <Input
                 id="contact-name"
                 required
                 autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Как к вам обращаться"
+                placeholder="Як до вас звертатися"
                 className="rounded-xl"
               />
             </div>
@@ -80,13 +80,13 @@ export function ContactSection() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contact-comment">Комментарий (необязательно)</Label>
+              <Label htmlFor="contact-comment">Коментар (необов'язково)</Label>
               <Textarea
                 id="contact-comment"
                 rows={3}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Кратко опишите вопрос"
+                placeholder="Коротко опишіть питання"
                 className="rounded-xl resize-y min-h-[88px]"
               />
             </div>
@@ -101,7 +101,7 @@ export function ContactSection() {
               ) : (
                 <Send className="mr-2 h-4 w-4" />
               )}
-              Отправить заявку
+              Відправити заявку
             </Button>
           </form>
         )}

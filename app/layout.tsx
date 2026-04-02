@@ -10,8 +10,8 @@ const GOOGLE_ADS_ID = 'AW-18058618634';
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
 export const metadata: Metadata = {
-  title: 'Оформление заказов',
-  description: 'Официальная страница поддержки и оформления заказов',
+  title: 'Офіційна сторінка оформлення замовлень',
+  description: 'Офіційна сторінка підтримки та оформлення замовлень',
   icons: {
     icon: '/api/favicon?v=2',
     shortcut: '/api/favicon?v=2',

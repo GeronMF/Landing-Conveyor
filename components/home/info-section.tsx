@@ -12,8 +12,8 @@ export function InfoSection() {
         className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-slate-50/90 px-6 py-8 text-center md:px-10"
       >
         <p className="text-sm leading-relaxed text-slate-700 md:text-base">
-          Оформление заказа осуществляется через страницы предложений. Ассортимент и условия могут
-          отличаться в зависимости от товара.
+          Оформлення замовлення здійснюється через сторінки пропозицій. Асортимент і умови можуть
+          відрізнятися залежно від товару.
         </p>
       </motion.div>
     </section>

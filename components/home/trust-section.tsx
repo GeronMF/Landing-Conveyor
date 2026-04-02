@@ -6,23 +6,23 @@ import { BadgeCheck, Headphones, ShieldCheck, UserCheck } from 'lucide-react';
 const items = [
   {
     icon: BadgeCheck,
-    title: 'Официальное оформление заказа',
-    text: 'Заявки обрабатываются в рамках согласованного предложения.',
+    title: 'Офіційне оформлення замовлення',
+    text: 'Заявки обробляються в межах погодженої пропозиції.',
   },
   {
     icon: UserCheck,
-    title: 'Подтверждение менеджером',
-    text: 'После заявки с вами свяжется менеджер для уточнения деталей.',
+    title: 'Підтвердження менеджером',
+    text: 'Після заявки менеджер зв’яжеться з вами для уточнення деталей.',
   },
   {
     icon: Headphones,
-    title: 'Поддержка клиентов',
-    text: 'Помощь при оформлении и вопросах по заказу.',
+    title: 'Підтримка клієнтів',
+    text: 'Допомога під час оформлення та консультації щодо замовлення.',
   },
   {
     icon: ShieldCheck,
-    title: 'Безопасные условия',
-    text: 'Прозрачные шаги оформления без навязанных «акций».',
+    title: 'Безпечні умови',
+    text: 'Прозорі кроки оформлення без нав’язливих «акцій».',
   },
 ];
 
@@ -31,7 +31,7 @@ export function TrustSection() {
     <section className="px-4 py-16 md:py-20">
       <div className="mx-auto max-w-5xl">
         <h2 className="text-center text-xl font-semibold text-slate-900 md:text-2xl">
-          Почему это удобно
+          Чому це зручно
         </h2>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((item, i) => (

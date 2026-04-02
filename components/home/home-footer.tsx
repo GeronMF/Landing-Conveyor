@@ -5,11 +5,11 @@ export function HomeFooter() {
     <footer className="border-t border-slate-200 bg-white px-4 py-12">
       <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-8 md:flex-row md:items-start">
         <div className="text-center md:text-left">
-          <p className="text-sm font-medium text-slate-900">Контакты</p>
+          <p className="text-sm font-medium text-slate-900">Контакти</p>
           <p className="mt-2 text-sm text-slate-600">
-            Вопросы по оформлению — через{' '}
+            Питання щодо оформлення — через{' '}
             <a href="#contact" className="text-blue-600 underline-offset-4 hover:underline">
-              форму выше
+              форму вище
             </a>
             .
           </p>
@@ -19,16 +19,15 @@ export function HomeFooter() {
             href="#legal"
             className="text-slate-600 transition hover:text-slate-900"
           >
-            Условия и информация
+            Умови та інформація
           </Link>
           <span className="text-slate-500">
-            Политика конфиденциальности и пользовательское соглашение уточняются у оператора
-            сервиса.
+            Політика конфіденційності та користувацька угода уточнюються в оператора сервісу.
           </span>
         </div>
       </div>
       <p className="mx-auto mt-10 max-w-5xl text-center text-xs text-slate-400">
-        © {new Date().getFullYear()} Официальная страница оформления заказов
+        © {new Date().getFullYear()} Офіційна сторінка оформлення замовлень
       </p>
     </footer>
   );

@@ -3,9 +3,9 @@
 import { motion } from 'framer-motion';
 
 const steps = [
-  { n: '1', title: 'Вы переходите на страницу товара', text: 'Используйте ссылку на конкретное предложение.' },
-  { n: '2', title: 'Оставляете заявку', text: 'Укажите контакты — так мы сможем с вами связаться.' },
-  { n: '3', title: 'Менеджер подтверждает заказ', text: 'Уточняются детали и условия по выбранному товару.' },
+  { n: '1', title: 'Ви переходите на сторінку товару', text: 'Використовуйте посилання на конкретну пропозицію.' },
+  { n: '2', title: 'Залишаєте заявку', text: 'Вкажіть контакти — так ми зможемо з вами зв’язатися.' },
+  { n: '3', title: 'Менеджер підтверджує замовлення', text: 'Уточнюються деталі та умови щодо обраного товару.' },
 ];
 
 export function HowWeWork() {
@@ -13,7 +13,7 @@ export function HowWeWork() {
     <section id="how-we-work" className="scroll-mt-20 border-y border-slate-200/80 bg-slate-50/80 px-4 py-16 md:py-20">
       <div className="mx-auto max-w-4xl">
         <h2 className="text-center text-xl font-semibold text-slate-900 md:text-2xl">
-          Как мы работаем
+          Як ми працюємо
         </h2>
         <ol className="mt-12 space-y-6">
           {steps.map((step, i) => (

@@ -24,12 +24,12 @@ export function HomeHero() {
         className="relative mx-auto max-w-3xl text-center"
       >
         <h1 className="text-balance text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-          Официальная страница оформления заказов
+          Офіційна сторінка оформлення замовлень
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-slate-600 md:text-lg">
-          Если вы перешли на главный адрес сайта, вы находитесь на странице поддержки и
-          оформления заказов. Для покупки используйте страницу предложения, на которую вы
-          переходили ранее.
+          Якщо ви перейшли на головну адресу сайту, ви знаходитесь на сторінці підтримки та
+          оформлення замовлень. Для покупки використовуйте сторінку пропозиції, на яку ви
+          переходили раніше.
         </p>
         <div className="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
           <Button
@@ -38,7 +38,7 @@ export function HomeHero() {
             onClick={scrollToContact}
           >
             <Headphones className="mr-2 h-4 w-4" />
-            Связаться с менеджером
+            Зв'язатися з менеджером
           </Button>
           <Button
             size="lg"
@@ -47,7 +47,7 @@ export function HomeHero() {
             onClick={scrollToHow}
           >
             <ListOrdered className="mr-2 h-4 w-4" />
-            Как это работает
+            Як це працює
           </Button>
         </div>
       </motion.div>

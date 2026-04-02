@@ -4,7 +4,7 @@ export type ContactFormPayload = {
   comment?: string;
 };
 
-/** Заглушка: сюда позже подключить API / почту / CRM */
+/** Заглушка: сюди пізніше підключити API / пошту / CRM */
 export async function submitContactForm(
   data: ContactFormPayload
 ): Promise<{ ok: boolean; error?: string }> {

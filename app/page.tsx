@@ -7,9 +7,9 @@ import { InfoSection } from '@/components/home/info-section';
 import { HomeFooter } from '@/components/home/home-footer';
 
 export const metadata: Metadata = {
-  title: 'Официальная страница оформления заказов',
+  title: 'Офіційна сторінка оформлення замовлень',
   description:
-    'Поддержка и оформление заказов. Используйте страницу предложения для покупки выбранного товара.',
+    'Підтримка та оформлення замовлень. Для покупки використовуйте сторінку пропозиції.',
 };
 
 export default function HomePage() {
