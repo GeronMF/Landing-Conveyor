@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { UPLOADS_ROOT, resolveSafePath } from '@/lib/media-storage';
 import { db } from '@/lib/db';
 import { VariantSection } from '@/components/landing/variant-section';
 import { FAQSection } from '@/components/landing/faq-section';
@@ -430,21 +430,20 @@ export async function generateMetadata({ params }: PageProps) {
     return candidates.filter(Boolean) as string[];
   };
 
-  // Проверяем, что если URL ведет на наш /api/uploads, то соответствующий файл реально существует.
+  // Проверяем, что если URL ведет на наш /api/uploads, то файл есть на диске (MEDIA_STORAGE_ROOT/uploads, не public/)
   const isCandidateAvailable = (candidateUrl: string) => {
     try {
       const pathname = candidateUrl.startsWith('http')
         ? new URL(candidateUrl).pathname
         : candidateUrl;
-      const match = pathname.match(/^\/api\/uploads\/([^\/]+)\/(.+)$/);
+      const match = pathname.match(/^\/api\/uploads\/([^/]+)\/(.+)$/);
       if (!match) return true; // внешние/другие URL считаем валидными
 
       const folder = match[1];
       const fileName = match[2];
-      const filePath = join(process.cwd(), 'public', 'uploads', folder, fileName);
-      return existsSync(filePath);
+      const filePath = resolveSafePath(UPLOADS_ROOT, [folder, fileName]);
+      return filePath ? existsSync(filePath) : false;
     } catch {
-      // Если не смогли распарсить — не ломаем генерацию, просто оставляем доступность как "валидную"
       return true;
     }
   };

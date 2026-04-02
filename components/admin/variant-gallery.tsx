@@ -5,10 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ImageUpload } from './image-upload';
-import { Plus, Trash2, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
-import Image from 'next/image';
+import { Trash2, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { BilingualField } from './bilingual-field';
+
+function galleryImageSrc(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) return url;
+  return `/${url.replace(/^\/+/, '')}`;
+}
 
 interface VariantGalleryProps {
   images: Array<{ id: string; url: string; alt?: string; altRu?: string; order: number }>;
@@ -153,8 +158,13 @@ export function VariantGallery({ images, landingId, variantId, onUpdate }: Varia
                 <ArrowDown className="w-4 h-4" />
               </Button>
             </div>
-            <div className="relative w-24 h-24 rounded overflow-hidden flex-shrink-0">
-              <Image src={image.url} alt={image.alt || ''} fill className="object-cover" />
+            <div className="relative w-24 h-24 rounded overflow-hidden flex-shrink-0 bg-muted">
+              <img
+                src={galleryImageSrc(image.url)}
+                alt={image.alt || ''}
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
             </div>
             <div className="flex-1 space-y-2">
               <BilingualField
