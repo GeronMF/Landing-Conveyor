@@ -14,6 +14,7 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       PORT: 3100,
+      MEDIA_STORAGE_ROOT: '/home/topcinastore/www',
     },
     error_file: '/home/topcinastore/app/logs/err.log',
     out_file: '/home/topcinastore/app/logs/out.log',
