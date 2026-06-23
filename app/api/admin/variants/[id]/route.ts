@@ -91,6 +91,27 @@ const updateVariantSchema = z.object({
   specificationsFixedBackground: z.boolean().optional(),
   cscartProductId: z.string().optional().nullable(),
   keycrmOfferSku: z.string().optional().nullable(),
+  hideTimer: z.boolean().optional(),
+  stockText: z.string().optional().nullable(),
+  stockTextRu: z.string().optional().nullable(),
+  stockStart: z.number().int().optional().nullable(),
+  stockMin: z.number().int().optional().nullable(),
+  whyUsTitle: z.string().optional().nullable(),
+  whyUsTitleRu: z.string().optional().nullable(),
+  whyUsItems: z
+    .array(
+      z.object({
+        title: z.string().optional().nullable(),
+        titleRu: z.string().optional().nullable(),
+        text: z.string().optional().nullable(),
+        textRu: z.string().optional().nullable(),
+      })
+    )
+    .optional()
+    .nullable(),
+  measureGuideHtml: z.string().optional().nullable(),
+  measureGuideHtmlRu: z.string().optional().nullable(),
+  measureGuideImage: z.string().optional().nullable(),
 });
 
 export async function PUT(

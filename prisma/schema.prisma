@@ -123,6 +123,23 @@ model Variant {
   cscartProductId       String?  // ID товара в CS-Cart для создания заказа
   keycrmOfferSku        String?  // SKU товару в KeyCRM
 
+  // Перший екран: таймер та псевдо-дефіцит
+  hideTimer             Boolean  @default(false)
+  stockText             String?
+  stockTextRu           String?
+  stockStart            Int?
+  stockMin              Int?
+
+  // Блок "Чому наш"
+  whyUsTitle            String?
+  whyUsTitleRu          String?
+  whyUsItems            Json?    // [{title, titleRu, text, textRu}]
+
+  // "Як зняти мірки" (під таблицею розмірів)
+  measureGuideHtml      String?  @db.LongText
+  measureGuideHtmlRu    String?  @db.LongText
+  measureGuideImage     String?
+
   // JSON поля по ТЗ
   heroImages     Json? // [{url, alt}] - галерея в hero
   advantages     Json? // [{id, title, text, image}]

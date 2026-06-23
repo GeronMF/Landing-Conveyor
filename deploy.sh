@@ -18,6 +18,9 @@ git checkout HEAD -- public/favicon.png public/logo.png public/logo-1.png \
 echo "[3] npm ci..."
 npm ci --prefer-offline 2>/dev/null || npm ci
 
+echo "[3.5] Prisma: sync schema to DB (additive, no data loss)..."
+npx prisma db push
+
 echo "[4] Build (postbuild copies public/ → standalone/public/)..."
 npm run build
 
