@@ -12,6 +12,47 @@ import { ImageGallery } from './image-gallery';
 import { CountdownTimer } from './countdown-timer';
 import { useI18n } from '@/lib/i18n/context';
 
+// Псевдо-дефицит: число плавно убывает в течение дня и сбрасывается каждый день
+function StockBadge({ template, start, min }: { template: string; start: number; min: number }) {
+  const safeStart = Number.isFinite(start) ? start : 12;
+  const safeMin = Number.isFinite(min) ? Math.min(min, safeStart) : Math.max(1, Math.round(safeStart * 0.2));
+  const [n, setN] = useState(safeStart);
+
+  useEffect(() => {
+    const calc = () => {
+      const now = new Date();
+      const midnight = new Date();
+      midnight.setHours(0, 0, 0, 0);
+      const end = new Date();
+      end.setHours(23, 59, 59, 999);
+      const fraction = (now.getTime() - midnight.getTime()) / (end.getTime() - midnight.getTime());
+      const value = Math.round(safeStart - (safeStart - safeMin) * Math.max(0, Math.min(1, fraction)));
+      setN(Math.max(safeMin, Math.min(safeStart, value)));
+    };
+    calc();
+    const id = setInterval(calc, 60000);
+    return () => clearInterval(id);
+  }, [safeStart, safeMin]);
+
+  const text = template.includes('{n}') ? template.replace(/\{n\}/g, String(n)) : `${template} ${n}`;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true, amount: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex justify-center"
+    >
+      <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-50 dark:bg-red-950/40 border-2 border-red-300 dark:border-red-800 shadow-md">
+        <span className="text-base md:text-lg font-bold text-red-600 dark:text-red-400">
+          {text}
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
 // Компонент для блока характеристик с fixed background
 const FixedBackgroundSpecs = forwardRef<HTMLDivElement, {
   backgroundImage?: string;
@@ -103,7 +144,7 @@ const FixedBackgroundSpecs = forwardRef<HTMLDivElement, {
       
       {/* Контент блока характеристик */}
       <div className="relative z-10 py-12 md:py-16">
-        <h3 className="text-3xl md:text-4xl font-bold mb-8 px-6 text-center th-title-gradient drop-shadow-lg">
+        <h3 className="text-3xl md:text-4xl font-bold mb-8 px-6 text-center text-white drop-shadow-lg">
           {t.common.specifications}
         </h3>
         <Card 
@@ -306,6 +347,17 @@ function normalizeVariant(variant: any) {
       videoUrlDesktop: (variant.videoUrlDesktop && variant.videoUrlDesktop.trim()) || null,
       videoUrlMobile: (variant.videoUrlMobile && variant.videoUrlMobile.trim()) || null,
       repeatOfferBlocks: variant.repeatOfferBlocks || 2,
+      hideTimer: variant.hideTimer ?? false,
+      stockText: variant.stockText || '',
+      stockTextRu: variant.stockTextRu || '',
+      stockStart: variant.stockStart ?? null,
+      stockMin: variant.stockMin ?? null,
+      whyUsTitle: variant.whyUsTitle || '',
+      whyUsTitleRu: variant.whyUsTitleRu || '',
+      whyUsItems: Array.isArray(variant.whyUsItems) ? variant.whyUsItems : [],
+      measureGuideHtml: variant.measureGuideHtml || '',
+      measureGuideHtmlRu: variant.measureGuideHtmlRu || '',
+      measureGuideImage: variant.measureGuideImage || '',
     };
   }
   
@@ -354,6 +406,17 @@ function normalizeVariant(variant: any) {
     faqLinkText: variant.faqLinkText || '',
     faqLinkTextRu: variant.faqLinkTextRu || '',
     repeatOfferBlocks: variant.repeatOfferBlocks || 2,
+    hideTimer: variant.hideTimer ?? false,
+    stockText: variant.stockText || '',
+    stockTextRu: variant.stockTextRu || '',
+    stockStart: variant.stockStart ?? null,
+    stockMin: variant.stockMin ?? null,
+    whyUsTitle: variant.whyUsTitle || '',
+    whyUsTitleRu: variant.whyUsTitleRu || '',
+    whyUsItems: Array.isArray(variant.whyUsItems) ? variant.whyUsItems : [],
+    measureGuideHtml: variant.measureGuideHtml || '',
+    measureGuideHtmlRu: variant.measureGuideHtmlRu || '',
+    measureGuideImage: variant.measureGuideImage || '',
     // Приоритет JSON полям, затем старым связям
     images: galleryJson.length > 0 
       ? galleryJson.map((img: any, idx: number) => ({ 
@@ -593,11 +656,11 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                 className="inline-block mb-4"
               >
                 <Badge 
-                  className="px-4 py-1.5 text-sm font-semibold text-white border-0 shadow-lg"
+                  className="px-6 py-2.5 text-base md:text-lg font-semibold text-white border-0 shadow-lg"
                   variant="secondary"
                   style={getGradientStyle(primaryColor, 'bg')}
                 >
-                  <Sparkles className="w-3 h-3 mr-1.5 inline" />
+                  <Sparkles className="w-4 h-4 md:w-5 md:h-5 mr-2 inline" />
                   {getTranslatedField(normalizedVariant.badgeText, normalizedVariant.badgeTextRu)}
                 </Badge>
               </motion.div>
@@ -770,11 +833,11 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                     className="inline-block"
                   >
                     <Badge 
-                      className="px-4 py-1.5 text-sm font-semibold text-white border-0 shadow-lg"
+                      className="px-5 py-2 text-sm md:text-base font-semibold text-white border-0 shadow-lg"
                       style={{ background: 'linear-gradient(to right, var(--th-badge-from), var(--th-badge-to))' }}
                       variant="secondary"
                     >
-                      <Sparkles className="w-3 h-3 mr-1.5 inline" />
+                      <Sparkles className="w-4 h-4 mr-1.5 inline" />
                       {getTranslatedField(normalizedVariant.badgeText, normalizedVariant.badgeTextRu)}
                     </Badge>
                   </motion.div>
@@ -865,12 +928,21 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                 transition={{ delay: 0.4 }}
                 className="space-y-3 pt-4"
               >
+                {/* Блок дефицита (псевдо-наличие) */}
+                {getTranslatedField(normalizedVariant.stockText, normalizedVariant.stockTextRu) && (
+                  <StockBadge
+                    template={getTranslatedField(normalizedVariant.stockText, normalizedVariant.stockTextRu)}
+                    start={normalizedVariant.stockStart ?? 12}
+                    min={normalizedVariant.stockMin ?? 2}
+                  />
+                )}
+
                 {/* Таймер обратного отсчета */}
-                <CountdownTimer />
+                {!normalizedVariant.hideTimer && <CountdownTimer />}
                 
                 <Button
                   size="lg"
-                  className="w-full text-lg py-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-white border-0 font-bold"
+                  className="w-full text-xl py-8 h-auto shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-white border-0 font-bold"
                   style={{ background: 'linear-gradient(to right, var(--th-btn-from), var(--th-btn-via), var(--th-btn-to))' }}
                   onClick={() => setFormOpen(true)}
                 >
@@ -881,11 +953,11 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                   <Button 
                     variant="outline" 
                     size="lg" 
-                    className="w-full text-lg py-6 border-2 hover:bg-primary/5 transition-all"
+                    className="w-full text-xl py-8 h-auto border-2 hover:bg-primary/5 transition-all"
                     asChild
                   >
                     <a href={`tel:${normalizedVariant.primaryPhone}`}>
-                      <Phone className="mr-2 h-5 w-5" />
+                      <Phone className="mr-2 h-6 w-6" />
                       {getTranslatedField(normalizedVariant.ctaSecondaryPhoneText, normalizedVariant.ctaSecondaryPhoneTextRu, normalizedVariant.primaryPhone || '')}
                     </a>
                   </Button>
@@ -904,6 +976,48 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
               </motion.button>
             </motion.div>
           </div>
+
+          {/* Блок "Чому наш" — карточки-аргументы */}
+          {Array.isArray(normalizedVariant.whyUsItems) && normalizedVariant.whyUsItems.length > 0 && (
+            <div className="mb-12 md:mb-16">
+              {getTranslatedField(normalizedVariant.whyUsTitle, normalizedVariant.whyUsTitleRu) && (
+                <h3 className="text-3xl md:text-4xl font-bold mb-8 text-center th-title-gradient">
+                  {getTranslatedField(normalizedVariant.whyUsTitle, normalizedVariant.whyUsTitleRu)}
+                </h3>
+              )}
+              <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 ${
+                normalizedVariant.whyUsItems.length >= 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'
+              }`}>
+                {normalizedVariant.whyUsItems.map((item: any, idx: number) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0 }}
+                    transition={{ delay: idx * 0.08 }}
+                    className="relative rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 p-6 border border-blue-100/50 dark:border-blue-900/30"
+                  >
+                    <div className="absolute top-0 left-6 right-6 h-1 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400" />
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white">
+                        <Check className="w-5 h-5" />
+                      </div>
+                      {getTranslatedField(item.title, item.titleRu) && (
+                        <h4 className="font-bold text-lg th-title-gradient">
+                          {getTranslatedField(item.title, item.titleRu)}
+                        </h4>
+                      )}
+                    </div>
+                    {getTranslatedField(item.text, item.textRu) && (
+                      <div className="text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                        <RichContent html={getTranslatedField(item.text, item.textRu)} />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Видео блок — lazy loading для быстрой загрузки */}
           {(() => {
@@ -998,6 +1112,120 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                   </div>
                 )}
               </div>
+            );
+          })()}
+
+          {/* Таблицы размеров — HTML-рендер */}
+          {(() => {
+            const htmlContent = language === 'ru' && normalizedVariant.sizeTableHtmlRu
+              ? normalizedVariant.sizeTableHtmlRu
+              : normalizedVariant.sizeTableHtml;
+
+            // Убираем <style> теги из HTML чтобы не ломать страницу
+            const sanitized = htmlContent
+              ? htmlContent.replace(/<style[\s\S]*?<\/style>/gi, '')
+              : '';
+
+            // Старый формат — если нет нового HTML, рендерим старые sizeTables
+            if (!sanitized && normalizedVariant.sizeTables && normalizedVariant.sizeTables.length > 0) {
+              return (
+                <motion.div
+                  initial="initial"
+                  animate={isInView ? 'animate' : 'initial'}
+                  variants={isInView ? fadeInUpAnimated : fadeInUp}
+                  className="mb-12 md:mb-16"
+                >
+                  <h3 className="text-3xl md:text-4xl font-bold mb-8 th-title-gradient">{t.common.sizeTables}</h3>
+                  {normalizedVariant.sizeTables.map((table: any) => (
+                    <div key={table.id} className="mb-8">
+                      {normalizedVariant.sizeTables.length > 1 && (
+                        <h4 className="text-xl font-semibold mb-4">{table.title}</h4>
+                      )}
+                      <div className="overflow-x-auto rounded-xl border-2 border-blue-200/50 dark:border-blue-800/50 shadow-lg bg-white dark:bg-gray-900">
+                        <table className="w-full">
+                          <thead className="bg-gradient-to-r from-blue-100 via-cyan-100 to-teal-100 dark:from-blue-900/50 dark:via-cyan-900/50 dark:to-teal-900/50">
+                            <tr>
+                              <th className="border p-3 text-left font-bold">{t.common.size || 'Розмір'}</th>
+                              {table.rows[0] && Object.keys(table.rows[0].columns).map((key: string) => (
+                                <th key={key} className="border p-3 text-left font-bold capitalize">{key}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {table.rows.map((row: any, rowIdx: number) => (
+                              <tr key={row.id} className={rowIdx % 2 === 0 ? 'bg-muted/30' : 'bg-background'}>
+                                <td className="border p-3 font-semibold">{row.sizeLabel}</td>
+                                {Object.values(row.columns).map((value: any, idx: number) => (
+                                  <td key={idx} className="border p-3">{value}</td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              );
+            }
+
+            if (!sanitized) return null;
+
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ duration: 0.5 }}
+                className="mb-12 md:mb-16"
+              >
+                <h3 className="text-3xl md:text-4xl font-bold mb-8 th-title-gradient">
+                  {t.common.sizeTables}
+                </h3>
+                <div
+                  className="size-table-html"
+                  dangerouslySetInnerHTML={{ __html: sanitized }}
+                />
+              </motion.div>
+            );
+          })()}
+
+          {/* Як зняти мірки — під таблицею розмірів */}
+          {(() => {
+            const measureHtml = getTranslatedField(normalizedVariant.measureGuideHtml, normalizedVariant.measureGuideHtmlRu);
+            const measureImage = normalizedVariant.measureGuideImage;
+            if (!measureHtml && !measureImage) return null;
+            const hasBoth = Boolean(measureHtml) && Boolean(measureImage);
+
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ duration: 0.5 }}
+                className="mb-12 md:mb-16"
+              >
+                <h3 className="text-2xl md:text-3xl font-bold mb-6 th-title-gradient">
+                  {language === 'ru' ? 'Как снять мерки' : 'Як зняти мірки'}
+                </h3>
+                <div className={`rounded-2xl border-2 border-blue-200/50 dark:border-blue-800/50 shadow-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm p-6 grid gap-6 items-center ${hasBoth ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+                  {measureImage && (
+                    <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden">
+                      <Image
+                        src={measureImage}
+                        alt={language === 'ru' ? 'Как снять мерки' : 'Як зняти мірки'}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  )}
+                  {measureHtml && (
+                    <div className="text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                      <RichContent html={measureHtml} />
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             );
           })()}
 
@@ -1099,81 +1327,6 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
             </div>
           )}
 
-          {/* Таблицы размеров — HTML-рендер */}
-          {(() => {
-            const htmlContent = language === 'ru' && normalizedVariant.sizeTableHtmlRu
-              ? normalizedVariant.sizeTableHtmlRu
-              : normalizedVariant.sizeTableHtml;
-
-            // Убираем <style> теги из HTML чтобы не ломать страницу
-            const sanitized = htmlContent
-              ? htmlContent.replace(/<style[\s\S]*?<\/style>/gi, '')
-              : '';
-
-            // Старый формат — если нет нового HTML, рендерим старые sizeTables
-            if (!sanitized && normalizedVariant.sizeTables && normalizedVariant.sizeTables.length > 0) {
-              return (
-                <motion.div
-                  initial="initial"
-                  animate={isInView ? 'animate' : 'initial'}
-                  variants={isInView ? fadeInUpAnimated : fadeInUp}
-                  className="mb-12 md:mb-16"
-                >
-                  <h3 className="text-3xl md:text-4xl font-bold mb-8 th-title-gradient">{t.common.sizeTables}</h3>
-                  {normalizedVariant.sizeTables.map((table: any) => (
-                    <div key={table.id} className="mb-8">
-                      {normalizedVariant.sizeTables.length > 1 && (
-                        <h4 className="text-xl font-semibold mb-4">{table.title}</h4>
-                      )}
-                      <div className="overflow-x-auto rounded-xl border-2 border-blue-200/50 dark:border-blue-800/50 shadow-lg bg-white dark:bg-gray-900">
-                        <table className="w-full">
-                          <thead className="bg-gradient-to-r from-blue-100 via-cyan-100 to-teal-100 dark:from-blue-900/50 dark:via-cyan-900/50 dark:to-teal-900/50">
-                            <tr>
-                              <th className="border p-3 text-left font-bold">{t.common.size || 'Розмір'}</th>
-                              {table.rows[0] && Object.keys(table.rows[0].columns).map((key: string) => (
-                                <th key={key} className="border p-3 text-left font-bold capitalize">{key}</th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {table.rows.map((row: any, rowIdx: number) => (
-                              <tr key={row.id} className={rowIdx % 2 === 0 ? 'bg-muted/30' : 'bg-background'}>
-                                <td className="border p-3 font-semibold">{row.sizeLabel}</td>
-                                {Object.values(row.columns).map((value: any, idx: number) => (
-                                  <td key={idx} className="border p-3">{value}</td>
-                                ))}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              );
-            }
-
-            if (!sanitized) return null;
-
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={{ duration: 0.5 }}
-                className="mb-12 md:mb-16"
-              >
-                <h3 className="text-3xl md:text-4xl font-bold mb-8 th-title-gradient">
-                  {t.common.sizeTables}
-                </h3>
-                <div
-                  className="size-table-html"
-                  dangerouslySetInnerHTML={{ __html: sanitized }}
-                />
-              </motion.div>
-            );
-          })()}
-
           {/* Характеристики */}
           {normalizedVariant.specifications && Array.isArray(normalizedVariant.specifications) && normalizedVariant.specifications.length > 0 && (
             <FixedBackgroundSpecs
@@ -1196,7 +1349,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
           >
             <Button
               size="lg"
-              className="w-full text-lg py-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-white border-0 font-bold"
+              className="w-full text-xl py-8 h-auto shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-white border-0 font-bold"
               style={{ background: 'linear-gradient(to right, var(--th-btn-from), var(--th-btn-via), var(--th-btn-to))' }}
               onClick={() => setFormOpen(true)}
             >
@@ -1207,11 +1360,11 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="w-full text-lg py-6 border-2 hover:bg-primary/5 transition-all"
+                className="w-full text-xl py-8 h-auto border-2 hover:bg-primary/5 transition-all"
                 asChild
               >
                 <a href={`tel:${normalizedVariant.primaryPhone}`}>
-                  <Phone className="mr-2 h-5 w-5" />
+                  <Phone className="mr-2 h-6 w-6" />
                   {normalizedVariant.ctaSecondaryPhoneText || normalizedVariant.primaryPhone}
                 </a>
               </Button>

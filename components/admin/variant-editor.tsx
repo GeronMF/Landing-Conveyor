@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Copy, Trash2, ArrowLeft, Save } from 'lucide-react';
+import { Copy, Trash2, ArrowLeft, Save, Plus, ChevronUp, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { BilingualField } from './bilingual-field';
 import { Input } from '@/components/ui/input';
@@ -98,6 +98,23 @@ export function VariantEditor({ variant, landingId, onSave, onDelete, onBack, on
         specificationsFixedBackground: localVariant.specsBackgroundFixed ?? localVariant.specificationsFixedBackground ?? false,
         cscartProductId: localVariant.cscartProductId ? String(localVariant.cscartProductId).trim() || null : null,
         keycrmOfferSku: localVariant.keycrmOfferSku ? String(localVariant.keycrmOfferSku).trim() || null : null,
+        hideTimer: localVariant.hideTimer ?? false,
+        stockText: localVariant.stockText ? String(localVariant.stockText).trim() || null : null,
+        stockTextRu: localVariant.stockTextRu ? String(localVariant.stockTextRu).trim() || null : null,
+        stockStart: localVariant.stockStart !== undefined && localVariant.stockStart !== null && localVariant.stockStart !== ''
+          ? parseInt(String(localVariant.stockStart), 10) || null
+          : null,
+        stockMin: localVariant.stockMin !== undefined && localVariant.stockMin !== null && localVariant.stockMin !== ''
+          ? parseInt(String(localVariant.stockMin), 10) || null
+          : null,
+        whyUsTitle: localVariant.whyUsTitle ? String(localVariant.whyUsTitle).trim() || null : null,
+        whyUsTitleRu: localVariant.whyUsTitleRu ? String(localVariant.whyUsTitleRu).trim() || null : null,
+        whyUsItems: Array.isArray(localVariant.whyUsItems) && localVariant.whyUsItems.length > 0
+          ? localVariant.whyUsItems
+          : null,
+        measureGuideHtml: localVariant.measureGuideHtml ? String(localVariant.measureGuideHtml).trim() || null : null,
+        measureGuideHtmlRu: localVariant.measureGuideHtmlRu ? String(localVariant.measureGuideHtmlRu).trim() || null : null,
+        measureGuideImage: localVariant.measureGuideImage || null,
       };
       // Передаем id вместе с данными
       await onSave({ id: variantId, ...dataToSave });
@@ -133,6 +150,33 @@ export function VariantEditor({ variant, landingId, onSave, onDelete, onBack, on
   // Обновляем локальное состояние при изменении подвкладок
   const handleVariantUpdate = (data: any) => {
     setLocalVariant({ ...localVariant, ...data });
+  };
+
+  // --- Управление карточками блока "Чому наш" ---
+  const whyUsItems: any[] = Array.isArray(localVariant.whyUsItems) ? localVariant.whyUsItems : [];
+
+  const updateWhyUsItem = (index: number, patch: any) => {
+    const next = whyUsItems.map((item, i) => (i === index ? { ...item, ...patch } : item));
+    setLocalVariant({ ...localVariant, whyUsItems: next });
+  };
+
+  const addWhyUsItem = () => {
+    setLocalVariant({
+      ...localVariant,
+      whyUsItems: [...whyUsItems, { title: '', titleRu: '', text: '', textRu: '' }],
+    });
+  };
+
+  const removeWhyUsItem = (index: number) => {
+    setLocalVariant({ ...localVariant, whyUsItems: whyUsItems.filter((_, i) => i !== index) });
+  };
+
+  const moveWhyUsItem = (index: number, dir: -1 | 1) => {
+    const target = index + dir;
+    if (target < 0 || target >= whyUsItems.length) return;
+    const next = [...whyUsItems];
+    [next[index], next[target]] = [next[target], next[index]];
+    setLocalVariant({ ...localVariant, whyUsItems: next });
   };
 
   return (
@@ -174,6 +218,7 @@ export function VariantEditor({ variant, landingId, onSave, onDelete, onBack, on
             <TabsTrigger value="gallery">Галерея</TabsTrigger>
             <TabsTrigger value="video">Відео</TabsTrigger>
             <TabsTrigger value="benefits">Переваги</TabsTrigger>
+            <TabsTrigger value="whyus">Чому наш</TabsTrigger>
             <TabsTrigger value="specs">Характеристики</TabsTrigger>
             <TabsTrigger value="sizes">Таблиці розмірів</TabsTrigger>
             <TabsTrigger value="reviews">Відгуки</TabsTrigger>
@@ -305,6 +350,56 @@ export function VariantEditor({ variant, landingId, onSave, onDelete, onBack, on
               onUkChange={(value) => setLocalVariant({ ...localVariant, faqLinkText: value })}
               onRuChange={(value) => setLocalVariant({ ...localVariant, faqLinkTextRu: value })}
             />
+
+            <div className="border-t pt-6 space-y-4">
+              <h3 className="text-lg font-semibold">Перший екран: таймер та дефіцит</h3>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="hide-timer"
+                  checked={localVariant.hideTimer ?? false}
+                  onCheckedChange={(checked) => setLocalVariant({ ...localVariant, hideTimer: checked })}
+                />
+                <Label htmlFor="hide-timer" className="cursor-pointer">
+                  Сховати таймер зворотного відліку
+                </Label>
+              </div>
+
+              <BilingualField
+                label="Текст дефіциту (використовуйте {n} для числа)"
+                ukValue={localVariant.stockText || ''}
+                ruValue={localVariant.stockTextRu || ''}
+                onUkChange={(value) => setLocalVariant({ ...localVariant, stockText: value })}
+                onRuChange={(value) => setLocalVariant({ ...localVariant, stockTextRu: value })}
+              />
+              <p className="text-xs text-muted-foreground -mt-2">
+                Приклад: «🔥 Залишилось {'{n}'} шт». Залиште порожнім, щоб не показувати блок.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Початкова кількість</Label>
+                  <Input
+                    type="number"
+                    placeholder="Напр. 12"
+                    value={localVariant.stockStart ?? ''}
+                    onChange={(e) => setLocalVariant({ ...localVariant, stockStart: e.target.value === '' ? null : parseInt(e.target.value, 10) })}
+                  />
+                </div>
+                <div>
+                  <Label>Мінімальна кількість</Label>
+                  <Input
+                    type="number"
+                    placeholder="Напр. 2"
+                    value={localVariant.stockMin ?? ''}
+                    onChange={(e) => setLocalVariant({ ...localVariant, stockMin: e.target.value === '' ? null : parseInt(e.target.value, 10) })}
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground -mt-2">
+                Число плавно зменшується протягом дня від початкового до мінімального і скидається щодня.
+              </p>
+            </div>
           </TabsContent>
 
           <TabsContent value="gallery" className="mt-4">
@@ -330,6 +425,68 @@ export function VariantEditor({ variant, landingId, onSave, onDelete, onBack, on
               variantId={localVariant.id}
               onUpdate={(benefits) => setLocalVariant({ ...localVariant, oldBenefits: benefits })}
             />
+          </TabsContent>
+
+          <TabsContent value="whyus" className="mt-4 space-y-4">
+            <div className="text-sm text-muted-foreground bg-muted/40 rounded-lg p-3">
+              Блок-порівняння «Чому наш» (напр. «Чому 1000, а не 700 як в інших»). Кожна картка — окремий аргумент. Якщо карток немає, блок не показується.
+            </div>
+
+            <BilingualField
+              label="Заголовок блоку"
+              ukValue={localVariant.whyUsTitle || ''}
+              ruValue={localVariant.whyUsTitleRu || ''}
+              onUkChange={(value) => setLocalVariant({ ...localVariant, whyUsTitle: value })}
+              onRuChange={(value) => setLocalVariant({ ...localVariant, whyUsTitleRu: value })}
+            />
+
+            <div className="space-y-4">
+              {whyUsItems.map((item, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-3 relative">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-muted-foreground">Картка {index + 1}</span>
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => moveWhyUsItem(index, -1)} disabled={index === 0}>
+                        <ChevronUp className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => moveWhyUsItem(index, 1)} disabled={index === whyUsItems.length - 1}>
+                        <ChevronDown className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => removeWhyUsItem(index)}>
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <BilingualField
+                    label="Заголовок картки"
+                    ukValue={item.title || ''}
+                    ruValue={item.titleRu || ''}
+                    onUkChange={(value) => updateWhyUsItem(index, { title: value })}
+                    onRuChange={(value) => updateWhyUsItem(index, { titleRu: value })}
+                  />
+
+                  <BilingualField
+                    label="Текст картки"
+                    ukValue={item.text || ''}
+                    ruValue={item.textRu || ''}
+                    onUkChange={(value) => updateWhyUsItem(index, { text: value })}
+                    onRuChange={(value) => updateWhyUsItem(index, { textRu: value })}
+                    type="rich"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <Button variant="outline" onClick={addWhyUsItem} className="w-full">
+              <Plus className="w-4 h-4 mr-2" />
+              Додати картку
+            </Button>
+
+            <Button onClick={handleSave} className="w-full" disabled={saving}>
+              <Save className="w-4 h-4 mr-2" />
+              {saving ? 'Зберігаємо...' : 'Зберегти блок «Чому наш»'}
+            </Button>
           </TabsContent>
 
           <TabsContent value="specs" className="mt-4 space-y-6">
@@ -433,6 +590,46 @@ export function VariantEditor({ variant, landingId, onSave, onDelete, onBack, on
                 placeholder="<p><strong>Размерный ряд...</strong></p><table>...</table>"
               />
             </div>
+            <div className="border-t pt-6 space-y-4">
+              <h3 className="text-lg font-semibold">Як зняти мірки</h3>
+              <p className="text-xs text-muted-foreground">
+                Показується одразу під таблицею розмірів. Можна додати картинку-схему та/або текст-інструкцію.
+              </p>
+
+              <div>
+                <Label>Картинка-схема замірів</Label>
+                <div className="mt-2">
+                  <ImageUpload
+                    value={localVariant.measureGuideImage || undefined}
+                    onChange={(url) => setLocalVariant({ ...localVariant, measureGuideImage: url || null })}
+                    landingId={landingId}
+                    label="Завантажити схему замірів"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Інструкція «Як зняти мірки» (UA)</Label>
+                <Textarea
+                  value={localVariant.measureGuideHtml || ''}
+                  onChange={(e) => setLocalVariant({ ...localVariant, measureGuideHtml: e.target.value })}
+                  rows={8}
+                  className="font-mono text-xs"
+                  placeholder="<p>Як правильно зняти мірки...</p><ul><li>...</li></ul>"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Інструкція «Як зняти мірки» (RU)</Label>
+                <Textarea
+                  value={localVariant.measureGuideHtmlRu || ''}
+                  onChange={(e) => setLocalVariant({ ...localVariant, measureGuideHtmlRu: e.target.value })}
+                  rows={8}
+                  className="font-mono text-xs"
+                  placeholder="<p>Как правильно снять мерки...</p><ul><li>...</li></ul>"
+                />
+              </div>
+            </div>
+
             <Button onClick={handleSave} className="w-full" disabled={saving}>
               <Save className="w-4 h-4 mr-2" />
               {saving ? 'Зберігаємо...' : 'Зберегти таблиці розмірів'}
