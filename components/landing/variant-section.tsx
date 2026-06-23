@@ -677,6 +677,48 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
 
           {/* Основной блок с изображением и информацией */}
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-12 mb-8 md:mb-12">
+            {/* Заголовок - только на мобильных (над галереей) */}
+            <div className="md:hidden text-center space-y-4 order-first">
+              {normalizedVariant.badgeText && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true, amount: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="inline-block"
+                >
+                  <Badge 
+                    className="px-5 py-2 text-sm md:text-base font-semibold text-white border-0 shadow-lg"
+                    style={{ background: 'linear-gradient(to right, var(--th-badge-from), var(--th-badge-to))' }}
+                    variant="secondary"
+                  >
+                    <Sparkles className="w-4 h-4 mr-1.5 inline" />
+                    {getTranslatedField(normalizedVariant.badgeText, normalizedVariant.badgeTextRu)}
+                  </Badge>
+                </motion.div>
+              )}
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0 }}
+                transition={{ delay: 0.15 }}
+                className="text-3xl font-bold th-title-gradient"
+              >
+                {getTranslatedField(normalizedVariant.title, normalizedVariant.titleRu)}
+              </motion.h2>
+              {normalizedVariant.subtitle && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-base text-muted-foreground prose prose-sm max-w-none"
+                >
+                  <RichContent html={getTranslatedField(normalizedVariant.subtitle, normalizedVariant.subtitleRu)} />
+                </motion.div>
+              )}
+            </div>
+
             {/* Галерея изображений */}
             <motion.div
               initial="initial"
@@ -822,48 +864,6 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
               variants={fadeInUp}
               className="flex flex-col justify-center space-y-6 order-2"
             >
-              {/* Заголовок - только на мобильных */}
-              <div className="md:hidden text-center space-y-4">
-                {normalizedVariant.badgeText && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true, amount: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="inline-block"
-                  >
-                    <Badge 
-                      className="px-5 py-2 text-sm md:text-base font-semibold text-white border-0 shadow-lg"
-                      style={{ background: 'linear-gradient(to right, var(--th-badge-from), var(--th-badge-to))' }}
-                      variant="secondary"
-                    >
-                      <Sparkles className="w-4 h-4 mr-1.5 inline" />
-                      {getTranslatedField(normalizedVariant.badgeText, normalizedVariant.badgeTextRu)}
-                    </Badge>
-                  </motion.div>
-                )}
-                <motion.h2 
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0 }}
-                  transition={{ delay: 0.15 }}
-                  className="text-3xl font-bold th-title-gradient"
-                >
-                  {getTranslatedField(normalizedVariant.title, normalizedVariant.titleRu)}
-                </motion.h2>
-                {normalizedVariant.subtitle && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true, amount: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-base text-muted-foreground prose prose-sm max-w-none"
-                  >
-                    <RichContent html={getTranslatedField(normalizedVariant.subtitle, normalizedVariant.subtitleRu)} />
-                  </motion.div>
-                )}
-              </div>
-
               {normalizedVariant.offerText && (
                 <motion.div
                   className="hidden md:block text-lg md:text-xl text-muted-foreground leading-relaxed prose prose-sm max-w-none"
@@ -942,7 +942,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                 
                 <Button
                   size="lg"
-                  className="w-full text-xl py-8 h-auto shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-white border-0 font-bold"
+                  className="w-full text-xl py-5 h-auto shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-white border-0 font-bold"
                   style={{ background: 'linear-gradient(to right, var(--th-btn-from), var(--th-btn-via), var(--th-btn-to))' }}
                   onClick={() => setFormOpen(true)}
                 >
@@ -953,7 +953,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                   <Button 
                     variant="outline" 
                     size="lg" 
-                    className="w-full text-xl py-8 h-auto border-2 hover:bg-primary/5 transition-all"
+                    className="w-full text-xl py-5 h-auto border-2 hover:bg-primary/5 transition-all"
                     asChild
                   >
                     <a href={`tel:${normalizedVariant.primaryPhone}`}>
@@ -1349,7 +1349,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
           >
             <Button
               size="lg"
-              className="w-full text-xl py-8 h-auto shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-white border-0 font-bold"
+              className="w-full text-xl py-5 h-auto shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-white border-0 font-bold"
               style={{ background: 'linear-gradient(to right, var(--th-btn-from), var(--th-btn-via), var(--th-btn-to))' }}
               onClick={() => setFormOpen(true)}
             >
@@ -1360,7 +1360,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="w-full text-xl py-8 h-auto border-2 hover:bg-primary/5 transition-all"
+                className="w-full text-xl py-5 h-auto border-2 hover:bg-primary/5 transition-all"
                 asChild
               >
                 <a href={`tel:${normalizedVariant.primaryPhone}`}>
