@@ -630,7 +630,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
   return (
     <section 
       ref={ref}
-      className="py-16 md:py-24 relative -mt-1" 
+      className="py-6 md:py-24 relative -mt-1" 
       id={`variant-${normalizedVariant.id}`}
     >
       {/* Декоративный фон — управляется через CSS-переменные темы */}
@@ -676,9 +676,9 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
           </motion.div>
 
           {/* Основной блок с изображением и информацией */}
-          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-12 mb-8 md:mb-12">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-3 md:gap-12 mb-6 md:mb-12">
             {/* Заголовок - только на мобильных (над галереей) */}
-            <div className="md:hidden text-center space-y-4 order-first">
+            <div className="md:hidden text-center space-y-2 order-first">
               {normalizedVariant.badgeText && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
