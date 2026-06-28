@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Save, Eye, Trash2, Plus, GripVertical, Zap } from 'lucide-react';
+import { ArrowLeft, Save, Eye, Trash2, Plus, GripVertical, Zap, ArrowUp, ArrowDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import Link from 'next/link';
@@ -170,6 +170,36 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
       toast.error(`Ошибка сохранения: ${error.message || 'Неизвестная ошибка'}`);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleMoveVariant = async (variantId: string, direction: 'up' | 'down') => {
+    const variants = [...(landing.oldVariants || [])];
+    const index = variants.findIndex((v: any) => v.id === variantId);
+    if (index === -1) return;
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === variants.length - 1) return;
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    [variants[index], variants[newIndex]] = [variants[newIndex], variants[index]];
+
+    const reordered = variants.map((v: any, idx: number) => ({ ...v, order: idx }));
+    // Оптимистично обновляем UI
+    setLanding({ ...landing, oldVariants: reordered });
+
+    try {
+      const response = await fetch('/api/admin/variants/reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: reordered.map((v: any) => ({ id: v.id, order: v.order })) }),
+      });
+      if (!response.ok) {
+        toast.error('Помилка зміни порядку');
+        fetchLanding();
+      }
+    } catch (error: any) {
+      toast.error(`Помилка: ${error.message}`);
+      fetchLanding();
     }
   };
 
@@ -522,32 +552,55 @@ export default function EditLandingPage({ params }: { params: Promise<{ id: stri
                     );
                   })() : (
                     <div className="space-y-2">
-                      {landing.oldVariants.map((variant: any) => (
-                        <Button
-                          key={variant.id}
-                          variant="outline"
-                          className="w-full justify-start"
-                          onClick={async () => {
-                            setSelectedVariantId(variant.id);
-                            // Загружаем полные данные варианта
-                            try {
-                              const response = await fetch(`/api/admin/variants/${variant.id}`);
-                              if (response.ok) {
-                                const fullVariant = await response.json();
-                                setLanding({
-                                  ...landing,
-                                  oldVariants: landing.oldVariants.map((v: any) =>
-                                    v.id === fullVariant.id ? fullVariant : v
-                                  ),
-                                });
+                      {landing.oldVariants.map((variant: any, index: number) => (
+                        <div key={variant.id} className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            className="flex-1 justify-start"
+                            onClick={async () => {
+                              setSelectedVariantId(variant.id);
+                              // Загружаем полные данные варианта
+                              try {
+                                const response = await fetch(`/api/admin/variants/${variant.id}`);
+                                if (response.ok) {
+                                  const fullVariant = await response.json();
+                                  setLanding({
+                                    ...landing,
+                                    oldVariants: landing.oldVariants.map((v: any) =>
+                                      v.id === fullVariant.id ? fullVariant : v
+                                    ),
+                                  });
+                                }
+                              } catch (error: any) {
+                                console.error('Error loading variant:', error);
                               }
-                            } catch (error: any) {
-                              console.error('Error loading variant:', error);
-                            }
-                          }}
-                        >
-                          {variant.title || `Варіант ${variant.order}`}
-                        </Button>
+                            }}
+                          >
+                            {variant.title || `Варіант ${variant.order}`}
+                          </Button>
+                          <div className="flex flex-col gap-0.5">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-5 px-2"
+                              onClick={() => handleMoveVariant(variant.id, 'up')}
+                              disabled={index === 0}
+                              title="Перемістити вгору"
+                            >
+                              <ArrowUp className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-5 px-2"
+                              onClick={() => handleMoveVariant(variant.id, 'down')}
+                              disabled={index === landing.oldVariants.length - 1}
+                              title="Перемістити вниз"
+                            >
+                              <ArrowDown className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   )}
