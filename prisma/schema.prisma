@@ -136,6 +136,8 @@ model Variant {
   whyUsItems            Json?    // [{title, titleRu, text, textRu}]
 
   // "Як зняти мірки" (під таблицею розмірів)
+  measureGuideTitle     String?
+  measureGuideTitleRu   String?
   measureGuideHtml      String?  @db.LongText
   measureGuideHtmlRu    String?  @db.LongText
   measureGuideImage     String?

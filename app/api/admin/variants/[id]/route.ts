@@ -109,6 +109,8 @@ const updateVariantSchema = z.object({
     )
     .optional()
     .nullable(),
+  measureGuideTitle: z.string().optional().nullable(),
+  measureGuideTitleRu: z.string().optional().nullable(),
   measureGuideHtml: z.string().optional().nullable(),
   measureGuideHtmlRu: z.string().optional().nullable(),
   measureGuideImage: z.string().optional().nullable(),

@@ -355,6 +355,8 @@ function normalizeVariant(variant: any) {
       whyUsTitle: variant.whyUsTitle || '',
       whyUsTitleRu: variant.whyUsTitleRu || '',
       whyUsItems: Array.isArray(variant.whyUsItems) ? variant.whyUsItems : [],
+      measureGuideTitle: variant.measureGuideTitle || '',
+      measureGuideTitleRu: variant.measureGuideTitleRu || '',
       measureGuideHtml: variant.measureGuideHtml || '',
       measureGuideHtmlRu: variant.measureGuideHtmlRu || '',
       measureGuideImage: variant.measureGuideImage || '',
@@ -414,6 +416,8 @@ function normalizeVariant(variant: any) {
     whyUsTitle: variant.whyUsTitle || '',
     whyUsTitleRu: variant.whyUsTitleRu || '',
     whyUsItems: Array.isArray(variant.whyUsItems) ? variant.whyUsItems : [],
+    measureGuideTitle: variant.measureGuideTitle || '',
+    measureGuideTitleRu: variant.measureGuideTitleRu || '',
     measureGuideHtml: variant.measureGuideHtml || '',
     measureGuideHtmlRu: variant.measureGuideHtmlRu || '',
     measureGuideImage: variant.measureGuideImage || '',
@@ -1206,7 +1210,8 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                 className="mb-12 md:mb-16"
               >
                 <h3 className="text-2xl md:text-3xl font-bold mb-6 th-title-gradient">
-                  {language === 'ru' ? 'Как снять мерки' : 'Як зняти мірки'}
+                  {getTranslatedField(normalizedVariant.measureGuideTitle, normalizedVariant.measureGuideTitleRu)
+                    || (language === 'ru' ? 'Как снять мерки' : 'Як зняти мірки')}
                 </h3>
                 <div className={`rounded-2xl border-2 border-blue-200/50 dark:border-blue-800/50 shadow-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm p-6 grid gap-6 items-center ${hasBoth ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
                   {measureImage && (

@@ -112,6 +112,8 @@ export function VariantEditor({ variant, landingId, onSave, onDelete, onBack, on
         whyUsItems: Array.isArray(localVariant.whyUsItems) && localVariant.whyUsItems.length > 0
           ? localVariant.whyUsItems
           : null,
+        measureGuideTitle: localVariant.measureGuideTitle ? String(localVariant.measureGuideTitle).trim() || null : null,
+        measureGuideTitleRu: localVariant.measureGuideTitleRu ? String(localVariant.measureGuideTitleRu).trim() || null : null,
         measureGuideHtml: localVariant.measureGuideHtml ? String(localVariant.measureGuideHtml).trim() || null : null,
         measureGuideHtmlRu: localVariant.measureGuideHtmlRu ? String(localVariant.measureGuideHtmlRu).trim() || null : null,
         measureGuideImage: localVariant.measureGuideImage || null,
@@ -595,6 +597,15 @@ export function VariantEditor({ variant, landingId, onSave, onDelete, onBack, on
               <p className="text-xs text-muted-foreground">
                 Показується одразу під таблицею розмірів. Можна додати картинку-схему та/або текст-інструкцію.
               </p>
+
+              <BilingualField
+                label="Заголовок блоку"
+                ukValue={localVariant.measureGuideTitle || ''}
+                ruValue={localVariant.measureGuideTitleRu || ''}
+                onUkChange={(value) => setLocalVariant({ ...localVariant, measureGuideTitle: value })}
+                onRuChange={(value) => setLocalVariant({ ...localVariant, measureGuideTitleRu: value })}
+                placeholder="Як зняти мірки"
+              />
 
               <div>
                 <Label>Картинка-схема замірів</Label>
