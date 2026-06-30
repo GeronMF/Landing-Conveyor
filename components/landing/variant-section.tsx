@@ -148,7 +148,7 @@ const FixedBackgroundSpecs = forwardRef<HTMLDivElement, {
           {t.common.specifications}
         </h3>
         <Card 
-          className="border-2 border-white/20 dark:border-white/10 shadow-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm mx-6"
+          className="border-2 border-white/20 dark:border-white/10 shadow-2xl bg-white/95 dark:bg-gray-900/95 mx-6"
         >
           <CardContent className="pt-6">
             <dl className="space-y-4">
@@ -776,7 +776,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                             e.stopPropagation();
                             setCurrentImage((prev) => (prev === 0 ? normalizedVariant.images.length - 1 : prev - 1));
                           }}
-                          className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white backdrop-blur-sm rounded-full p-2 md:p-3 shadow-xl border-2 border-blue-200/50 hover:border-purple-400 transition-all hover:scale-110"
+                          className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white rounded-full p-2 md:p-3 shadow-xl border-2 border-blue-200/50 hover:border-purple-400 transition-all hover:scale-110"
                           aria-label="Previous image"
                         >
                           <ChevronLeft className="w-4 h-4 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
@@ -786,7 +786,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                             e.stopPropagation();
                             setCurrentImage((prev) => (prev === normalizedVariant.images.length - 1 ? 0 : prev + 1));
                           }}
-                          className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white backdrop-blur-sm rounded-full p-2 md:p-3 shadow-xl border-2 border-blue-200/50 hover:border-purple-400 transition-all hover:scale-110"
+                          className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white rounded-full p-2 md:p-3 shadow-xl border-2 border-blue-200/50 hover:border-purple-400 transition-all hover:scale-110"
                           aria-label="Next image"
                         >
                           <ChevronRight className="w-4 h-4 md:w-6 md:h-6 text-blue-600 dark:text-blue-400" />
@@ -1003,7 +1003,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                       hidden: { opacity: 0, y: 16 },
                       visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
                     }}
-                    className={`relative transform-gpu w-full sm:w-[calc(50%-0.75rem)] ${normalizedVariant.whyUsItems.length >= 3 ? 'lg:w-[calc(33.333%-1rem)]' : 'lg:w-[calc(50%-0.75rem)]'} rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 p-6 border border-blue-100/50 dark:border-blue-900/30`}
+                    className={`relative transform-gpu w-full sm:w-[calc(50%-0.75rem)] ${normalizedVariant.whyUsItems.length >= 3 ? 'lg:w-[calc(33.333%-1rem)]' : 'lg:w-[calc(50%-0.75rem)]'} rounded-2xl bg-white/95 dark:bg-gray-900/95 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 p-6 border border-blue-100/50 dark:border-blue-900/30`}
                   >
                     <div className="absolute top-0 left-6 right-6 h-1 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400" />
                     <div className="flex items-center gap-3 mb-3">
@@ -1217,7 +1217,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                   {getTranslatedField(normalizedVariant.measureGuideTitle, normalizedVariant.measureGuideTitleRu)
                     || (language === 'ru' ? 'Как снять мерки' : 'Як зняти мірки')}
                 </h3>
-                <div className={`rounded-2xl border-2 border-blue-200/50 dark:border-blue-800/50 shadow-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm p-6 grid gap-6 items-center ${hasBoth ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+                <div className={`rounded-2xl border-2 border-blue-200/50 dark:border-blue-800/50 shadow-lg bg-white/95 dark:bg-gray-900/95 p-6 grid gap-6 items-center ${hasBoth ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
                   {measureImage && (
                     <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden">
                       <Image
@@ -1304,7 +1304,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                         <div className="absolute -top-4 -left-4 w-20 h-20 rounded-full bg-gradient-to-br from-indigo-100/40 to-purple-100/40 dark:from-indigo-900/10 dark:to-purple-900/10 blur-lg" />
 
                         {/* Контент */}
-                        <div className={`relative bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm ${benefitImage ? 'pt-12' : 'pt-6'} pb-8 px-6 flex flex-col items-center`}>
+                        <div className={`relative bg-white/95 dark:bg-gray-900/95 ${benefitImage ? 'pt-12' : 'pt-6'} pb-8 px-6 flex flex-col items-center`}>
                           {/* Номер карточки */}
                           <div className={`absolute top-4 right-4 w-8 h-8 rounded-full bg-gradient-to-br ${color.border} flex items-center justify-center text-white text-xs font-bold shadow-md`}>
                             {idx + 1}
