@@ -1003,7 +1003,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                       hidden: { opacity: 0, y: 16 },
                       visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
                     }}
-                    className={`relative transform-gpu w-full sm:w-[calc(50%-0.75rem)] ${normalizedVariant.whyUsItems.length >= 3 ? 'lg:w-[calc(33.333%-1rem)]' : 'lg:w-[calc(50%-0.75rem)]'} rounded-2xl bg-white/95 dark:bg-gray-900/95 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 p-6 border border-blue-100/50 dark:border-blue-900/30`}
+                    className={`relative transform-gpu w-full sm:w-[calc(50%-0.75rem)] ${normalizedVariant.whyUsItems.length >= 3 ? 'lg:w-[calc(33.333%-1rem)]' : 'lg:w-[calc(50%-0.75rem)]'} rounded-2xl bg-white/95 dark:bg-gray-900/95 shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 border border-blue-100/50 dark:border-blue-900/30`}
                   >
                     <div className="absolute top-0 left-6 right-6 h-1 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400" />
                     <div className="flex items-center gap-3 mb-3">
