@@ -989,15 +989,21 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                   {getTranslatedField(normalizedVariant.whyUsTitle, normalizedVariant.whyUsTitleRu)}
                 </h3>
               )}
-              <div className="flex flex-wrap justify-center gap-6">
+              <motion.div
+                className="flex flex-wrap justify-center gap-6"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+              >
                 {normalizedVariant.whyUsItems.map((item: any, idx: number) => (
                   <motion.div
                     key={idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0 }}
-                    transition={{ delay: idx * 0.08 }}
-                    className={`relative w-full sm:w-[calc(50%-0.75rem)] ${normalizedVariant.whyUsItems.length >= 3 ? 'lg:w-[calc(33.333%-1rem)]' : 'lg:w-[calc(50%-0.75rem)]'} rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 p-6 border border-blue-100/50 dark:border-blue-900/30`}
+                    variants={{
+                      hidden: { opacity: 0, y: 16 },
+                      visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+                    }}
+                    className={`relative transform-gpu w-full sm:w-[calc(50%-0.75rem)] ${normalizedVariant.whyUsItems.length >= 3 ? 'lg:w-[calc(33.333%-1rem)]' : 'lg:w-[calc(50%-0.75rem)]'} rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 p-6 border border-blue-100/50 dark:border-blue-900/30`}
                   >
                     <div className="absolute top-0 left-6 right-6 h-1 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400" />
                     <div className="flex items-center gap-3 mb-3">
@@ -1017,7 +1023,7 @@ export function VariantSection({ landingId, variant, primaryColor, variantIndex 
                     )}
                   </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </div>
           )}
 
